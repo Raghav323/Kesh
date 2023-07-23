@@ -14,26 +14,26 @@ class Board_State{
     bool side;
     int enPas;
     int fiftyMove;
-    int castlePerm = 0;
+    int castlePerm;
 
     int ply;
     int hisPly;
 
     int fullMoves;
-    int KingSq[2]={NO_SQ};
+    int KingSq[2];
 
     
 
     U64 posKey;
 
-    U64 OccupancyMap = 0ULL;
+    U64 OccupancyMap ;
 
-    U64 OccupancyMapColor[2] = {0ULL};
+    U64 OccupancyMapColor[2];
 
-    U64 OccupancyMapBQ[2] = {0ULL};
-    U64 OccupancyMapRQ[2] = {0ULL};
-    U64 OccupancyMapP[2] = {0ULL};
-    U64 OccupancyMapN[2] = {0ULL};
+    U64 OccupancyMapBQ[2] ;
+    U64 OccupancyMapRQ[2] ;
+    U64 OccupancyMapP[2];
+    U64 OccupancyMapN[2] ;
 
 
     // U64 piecesMap[13]={0ULL};
@@ -48,6 +48,6 @@ class Board_State{
     void MovePiece(int from , int to );
 
 
-
+    void resetBoard();
 };
 

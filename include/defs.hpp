@@ -4,6 +4,7 @@
 #include <bits/stdc++.h>
 #include<iostream> 
 # include <assert.h>
+#include <unordered_map>
 
 using namespace std;
 
@@ -24,7 +25,7 @@ typedef unsigned long long U64;
 #define clear_bit(bitboard, square) (bitboard &= ~(1ULL << square))
 #define pop_bit(bitboard, square) (get_bit(bitboard, square) ? (bitboard ^= (1ULL << square)) : 0)
 
-
+extern unordered_map<char, int> notation;
 
 
 enum PieceTypeWithoutColor { NO_PIECE_TYPE, PAWN, KNIGHT, BISHOP, ROOK, QUEEN, KING }; // Piece types without color
@@ -38,12 +39,12 @@ enum File { FILE_A, FILE_B, FILE_C, FILE_D, FILE_E, FILE_F, FILE_G, FILE_H, FILE
 
 enum Rank { RANK_1, RANK_2, RANK_3, RANK_4, RANK_5, RANK_6, RANK_7, RANK_8, RANK_NONE }; // Ranks
 
-enum SquareType {NO_SQ= -2 , OFFBOARD = -1 , EMPTY , OCCUPIED }; // Square types
+enum SquareType {NO_SQ= 0 , OFFBOARD = -1 , EMPTY , OCCUPIED }; // Square types
 
 
 
 
-enum { A1 = 0, B1, C1, D1, E1, F1, G1, H1, // Squares
+enum SquarEnotation { A1 = 0, B1, C1, D1, E1, F1, G1, H1, // Squares
        A2 = 8, B2, C2, D2, E2, F2, G2, H2,
        A3 = 16, B3, C3, D3, E3, F3, G3, H3,
        A4 = 32, B4, C4, D4, E4, F4, G4, H4,
@@ -68,13 +69,13 @@ enum { WKCA = 1, WQCA = 2, BKCA = 4, BQCA = 8 }; // Castling permissions
 
 /* GLOBALS */
 
-extern const U64 pawn_attacks[2][64];
-extern const U64 knight_attacks[64];
-extern const U64 king_attacks[64];
-extern const U64 queen_attacks[64];
-extern const U64 pawn_pushes[2][64];
-extern const int PAWN_PUSH_DIRECTION[2];
-extern const U64 rectlookup[64][64];
+extern  U64 pawn_attacks[2][64];
+extern  U64 knight_attacks[64];
+extern  U64 king_attacks[64];
+extern  U64 queen_attacks[64];
+extern  U64 pawn_pushes[2][64];
+extern  int PAWN_PUSH_DIRECTION[2];
+extern  U64 rectlookup[64][64];
 
 extern const int CastlePerm[64];
 // extern int Sq120ToSq64[BOARD_SQ];
@@ -88,7 +89,7 @@ extern int count_bits(U64 bitboard);
 extern  PieceType get_piece_type(PieceTypeWithoutColor pieceTypeWithoutColor, int pieceColor);
 extern void print_Move_list(vector<int> moveList);
 extern void init_castle_map();
-
+extern void print_move(int move);
 
 /* MAGIC */
 extern void init_sliders_attacks(int);

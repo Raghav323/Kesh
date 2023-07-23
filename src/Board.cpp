@@ -70,6 +70,7 @@ void Board_State::updatePieceBoard(Square sq , Piece piece , bool add){
         };
         pieceBoard[piece.pieceType].insert(sq);
         piecePlacement[sq.squareNo].pieceOccupying = piece;
+        piece.pieceSquare = sq.squareNo;
         set_bit(OccupancyMap, sq.squareNo);
         set_bit(OccupancyMapColor[piece.get_piece_color()], sq.squareNo);
         // set_bit(piecesMap[piece.pieceType], sq.squareNo);
@@ -80,13 +81,14 @@ void Board_State::updatePieceBoard(Square sq , Piece piece , bool add){
         if(piece.pieceType == NO_PIECE){
             return;
         }
+       
         switch (piece.pieceType) {
-            case wK : 
-                KingSq[WHITE] = NO_SQ;
-                break;
-            case bK: 
-                KingSq[BLACK] = NO_SQ;
-                break;
+            // case wK : 
+            //     KingSq[WHITE] = NO_SQ;
+            //     break;
+            // case bK: 
+            //     KingSq[BLACK] = NO_SQ;
+            //     break;
             case wQ:
             case bQ:
                 clear_bit(OccupancyMapBQ[piece.get_piece_color()], sq.squareNo);
@@ -120,7 +122,7 @@ void Board_State::updatePieceBoard(Square sq , Piece piece , bool add){
 
 
         pieceBoard[piece.pieceType].erase(sq);
-        piecePlacement[sq.squareNo].pieceOccupying = Piece(NO_PIECE,BOTH);
+        piecePlacement[sq.squareNo].pieceOccupying = Piece(NO_PIECE,sq.squareNo);
         clear_bit(OccupancyMap, sq.squareNo);
         // clear_bit(piecesMap[piece.pieceType], sq.squareNo);
         clear_bit(OccupancyMapColor[piece.get_piece_color()], sq.squareNo);
@@ -140,7 +142,7 @@ updatePieceBoard(piecePlacement[from],piecePlacement[from].pieceOccupying , 0);
 }
 
 Board_State::Board_State(std::string FEN){
-    
+    resetBoard();
     int f = FILE_A ;
     int r = RANK_8; 
 
@@ -307,6 +309,7 @@ Board_State::Board_State(std::string FEN){
 
 
     while(FEN[i+j]!=' '){
+       
     j++;
     }
 
@@ -322,7 +325,36 @@ Board_State::Board_State(std::string FEN){
 };
 
 
+void Board_State::resetBoard(){
+     
+    side = WHITE; // Default 
+    enPas = NO_SQ;
+    fiftyMove = 0 ;
+    castlePerm = 0;
 
+    ply = 0;
+    hisPly = 0 ;
+
+    fullMoves = 0;
+
+    OccupancyMap = 0ULL;
+    
+    fill(KingSq, KingSq+2, NO_SQ);
+    fill(OccupancyMapColor, OccupancyMapColor+2, 0ULL);
+    fill(OccupancyMapBQ, OccupancyMapBQ+2, 0ULL);
+    fill(OccupancyMapRQ, OccupancyMapRQ+2, 0ULL);
+    fill(OccupancyMapP, OccupancyMapP+2, 0ULL);
+    fill(OccupancyMapN, OccupancyMapN+2, 0ULL);
+
+    
+
+    
+
+    
+
+    
+
+}
  
 
   

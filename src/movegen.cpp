@@ -117,7 +117,7 @@ void MoveGen::update_attack_boards(Board_State &board_state, int side) {
 
   
 // }
-void MoveGen::update_KingMovesInfo(Board_State &board_state, int side) {
+void MoveGen::update_KingMovesInfo(vector<int>& MoveList , Board_State &board_state, int side) {
   
 
   for (auto sq : board_state.pieceBoard[get_piece_type(BISHOP, side ^ 1)]) {
@@ -146,7 +146,7 @@ void MoveGen::update_KingMovesInfo(Board_State &board_state, int side) {
   
 
 
-  BitmapToMoveList(board_state.KingSq[side] , King_Moves ,NO_SQ , false);
+  BitmapToMoveList(MoveList,board_state.KingSq[side] , King_Moves ,NO_SQ , false);
 
   // moveList.push_back(make_pair(Piece(KING,(color) side,board_state.KingSq[side]), Moves[side][KING][0]));
 
@@ -180,21 +180,21 @@ void MoveGen::update_capture_board(Board_State &board_state , int side ){
 
 
 // void MoveGen::update_push_board(bad_alloc &boa)
-void MoveGen:: reset(){ pushMask[0]=~0ULL;pushMask[1]=~0ULL;}
 
-void MoveGen:: generate_moves(Board_State &board_state , int side){
+
+int MoveGen:: generate_moves(vector<int> &moveList , Board_State &board_state , int side){
 
   reset();
   update_attack_boards(board_state ,0);
   update_attack_boards(board_state ,1);
-  update_KingMovesInfo(board_state, side);
+  update_KingMovesInfo(moveList,board_state, side);
   update_enPasssantInfo(board_state, side);
   update_capture_board(board_state, side);
 
 
-  if(num_checkers[side]>1){return;}
+  if(num_checkers[side]>1){return moveList.size();;}
 
-  GenerateMovesForPinned(board_state , side);
+  GenerateMovesForPinned(moveList,board_state , side);
 
   // if(num_checkers[side]!=0){
   // //update_push_mask(board_state, side);
@@ -211,7 +211,7 @@ void MoveGen:: generate_moves(Board_State &board_state , int side){
       
      // print_bitboard((board_state.OccupancyMap|(1ULL<<board_state.enPas)) & (~ ((1ULL<<sqNo) | enPassantCaptureSquare )));
       if(  ( ( (enPassantCaptureSquare & captureBoard[side])!=0ULL) | (get_bit(pushMask[side], board_state.enPas) ) )  && (!isSqAttacked(board_state, board_state.KingSq[side], side,sqNo))  ){
-        BitmapToMoveList(sqNo , board_state.enPas  , board_state.enPas , false);
+        BitmapToMoveList(moveList,sqNo , board_state.enPas  , board_state.enPas , false);
       }
 
 
@@ -222,7 +222,7 @@ void MoveGen:: generate_moves(Board_State &board_state , int side){
   
     if(!get_bit(pinnedPiecesMap[side],sqNo)){
       
-      BitmapToMoveList(sqNo , (pawn_attacks[side][sqNo] & captureBoard [side]) | (get_pawn_moves(sqNo, side, board_state.OccupancyMap ) & pushMask[side]),NO_SQ , (48<=sqNo && sqNo<=55 && side==WHITE) || (8<=sqNo && sqNo<=15 && side==BLACK));
+      BitmapToMoveList(moveList,sqNo , (pawn_attacks[side][sqNo] & captureBoard [side]) | (get_pawn_moves(sqNo, side, board_state.OccupancyMap ) & pushMask[side]),NO_SQ , (48<=sqNo && sqNo<=55 && side==WHITE) || (8<=sqNo && sqNo<=15 && side==BLACK));
 
     }
 
@@ -238,7 +238,7 @@ void MoveGen:: generate_moves(Board_State &board_state , int side){
       continue;
     }
 
-    BitmapToMoveList(sqNo , (knight_attacks[sqNo] & ( captureBoard[side] | pushMask[side])),NO_SQ , false);
+    BitmapToMoveList(moveList,sqNo , (knight_attacks[sqNo] & ( captureBoard[side] | pushMask[side])),NO_SQ , false);
   }
 
   // get all bishop pieces
@@ -249,7 +249,7 @@ void MoveGen:: generate_moves(Board_State &board_state , int side){
       continue;
     }
 
-    BitmapToMoveList(sqNo , (get_bishop_attacks(sqNo , board_state.OccupancyMap) & ( captureBoard[side] | pushMask[side])),NO_SQ , false);
+    BitmapToMoveList(moveList,sqNo , (get_bishop_attacks(sqNo , board_state.OccupancyMap) & ( captureBoard[side] | pushMask[side])),NO_SQ , false);
   }
 
   // get all rook pieces
@@ -259,7 +259,7 @@ void MoveGen:: generate_moves(Board_State &board_state , int side){
     if(get_bit(pinnedPiecesMap[side],sqNo)){
       continue;
     }
-    BitmapToMoveList(sqNo , (get_rook_attacks(sqNo , board_state.OccupancyMap) & ( captureBoard[side] | pushMask[side])),NO_SQ , false);
+    BitmapToMoveList(moveList, sqNo , (get_rook_attacks(sqNo , board_state.OccupancyMap) & ( captureBoard[side] | pushMask[side])),NO_SQ , false);
   }
 
   // get all queen pieces
@@ -269,7 +269,7 @@ void MoveGen:: generate_moves(Board_State &board_state , int side){
     if(get_bit(pinnedPiecesMap[side],sqNo)){
       continue;
     }
-    BitmapToMoveList(sqNo , (get_bishop_attacks(sqNo , board_state.OccupancyMap) | get_rook_attacks(sqNo , board_state.OccupancyMap)) & ( captureBoard[side] | pushMask[side]),NO_SQ , false);
+    BitmapToMoveList(moveList , sqNo , (get_bishop_attacks(sqNo , board_state.OccupancyMap) | get_rook_attacks(sqNo , board_state.OccupancyMap)) & ( captureBoard[side] | pushMask[side]),NO_SQ , false);
   }
 
   // castle moves 
@@ -307,6 +307,8 @@ void MoveGen:: generate_moves(Board_State &board_state , int side){
 
   }
 
+  return moveList.size();
+
 
 
 }
@@ -323,7 +325,7 @@ void MoveGen:: generate_moves(Board_State &board_state , int side){
 
  };
 
- void MoveGen::BitmapToMoveList(int sq , U64 MoveMap ,int EnPassantSQ , bool Promotion ){
+ void MoveGen::BitmapToMoveList(vector<int>& moveList , int sq , U64 MoveMap ,int EnPassantSQ , bool Promotion ){
 
  // 00  00   000000  000000
  /// A move needs 16 bits to be stored
@@ -365,7 +367,7 @@ void MoveGen:: generate_moves(Board_State &board_state , int side){
  }
 
 
-void MoveGen:: GenerateMovesForPinned(Board_State &board_state , int side){
+void MoveGen:: GenerateMovesForPinned(vector<int>& MoveList , Board_State &board_state , int side){
 
 
 U64 pinner = xrayRookAttacks(board_state.OccupancyMap,board_state.OccupancyMapColor[side] , board_state.KingSq[side]) & board_state.OccupancyMapRQ[1^side]  ;
@@ -379,24 +381,24 @@ while ( pinner ) {
     case bB:
     case wB: 
 
-    BitmapToMoveList(pinnedSq , rectlookup[sq][board_state.KingSq[side]] & (get_bishop_attacks(pinnedSq , board_state.OccupancyMap) & ( captureBoard[side] | pushMask[side])),NO_SQ , false);
+    BitmapToMoveList(MoveList,pinnedSq , rectlookup[sq][board_state.KingSq[side]] & (get_bishop_attacks(pinnedSq , board_state.OccupancyMap) & ( captureBoard[side] | pushMask[side])),NO_SQ , false);
     break;
 
 
     case wP:
     case bP:
-    BitmapToMoveList(pinnedSq , rectlookup[sq][board_state.KingSq[side]] & ((pawn_attacks[side][pinnedSq] & captureBoard [side]) | (get_pawn_moves(pinnedSq, side, board_state.OccupancyMap ) & pushMask[side])),NO_SQ , 48<=pinnedSq && pinnedSq<=55);
+    BitmapToMoveList(MoveList,pinnedSq , rectlookup[sq][board_state.KingSq[side]] & ((pawn_attacks[side][pinnedSq] & captureBoard [side]) | (get_pawn_moves(pinnedSq, side, board_state.OccupancyMap ) & pushMask[side])),NO_SQ , false);
     break;
 
 
     case wR:
     case bR:
-    BitmapToMoveList(pinnedSq , rectlookup[sq][board_state.KingSq[side]] & (get_rook_attacks(pinnedSq , board_state.OccupancyMap) & ( captureBoard[side] | pushMask[side])),NO_SQ, false);
+    BitmapToMoveList(MoveList,pinnedSq , rectlookup[sq][board_state.KingSq[side]] & (get_rook_attacks(pinnedSq , board_state.OccupancyMap) & ( captureBoard[side] | pushMask[side])),NO_SQ, false);
     break;
 
     case wQ:
     case bQ:
-    BitmapToMoveList(pinnedSq , rectlookup[sq][board_state.KingSq[side]] & ((get_bishop_attacks(pinnedSq , board_state.OccupancyMap) | get_rook_attacks(pinnedSq, board_state.OccupancyMap)) & ( captureBoard[side] | pushMask[side])),NO_SQ , false);
+    BitmapToMoveList(MoveList,pinnedSq , rectlookup[sq][board_state.KingSq[side]] & ((get_bishop_attacks(pinnedSq , board_state.OccupancyMap) | get_rook_attacks(pinnedSq, board_state.OccupancyMap)) & ( captureBoard[side] | pushMask[side])),NO_SQ , false);
     break;
 
     default:
@@ -417,7 +419,7 @@ while ( pinner ) {
     case bB:
     case wB: 
 
-    BitmapToMoveList(pinnedSq , rectlookup[sq][board_state.KingSq[side]] & (get_bishop_attacks(pinnedSq , board_state.OccupancyMap) & ( captureBoard[side] | pushMask[side])),NO_SQ , false);
+    BitmapToMoveList(MoveList,pinnedSq , rectlookup[sq][board_state.KingSq[side]] & (get_bishop_attacks(pinnedSq , board_state.OccupancyMap) & ( captureBoard[side] | pushMask[side])),NO_SQ , false);
     break;
 
 
@@ -425,18 +427,18 @@ while ( pinner ) {
     case bP:
 
     
-    BitmapToMoveList(pinnedSq , (rectlookup[sq][board_state.KingSq[side]] & (    (pawn_attacks[side][pinnedSq] & captureBoard [side]) |   (get_pawn_moves(pinnedSq, side, board_state.OccupancyMap ) & pushMask[side])  )  ) ,NO_SQ , 48<=pinnedSq && pinnedSq<=55);
+    BitmapToMoveList(MoveList,pinnedSq , (rectlookup[sq][board_state.KingSq[side]] & (    (pawn_attacks[side][pinnedSq] & captureBoard [side]) |   (get_pawn_moves(pinnedSq, side, board_state.OccupancyMap ) & pushMask[side])  )  ) ,NO_SQ , false);
     break;
 
 
     case wR:
     case bR:
-    BitmapToMoveList(pinnedSq , rectlookup[sq][board_state.KingSq[side]] & (get_rook_attacks(pinnedSq , board_state.OccupancyMap) & ( captureBoard[side] | pushMask[side])),NO_SQ, false);
+    BitmapToMoveList(MoveList,pinnedSq , rectlookup[sq][board_state.KingSq[side]] & (get_rook_attacks(pinnedSq , board_state.OccupancyMap) & ( captureBoard[side] | pushMask[side])),NO_SQ, false);
     break;
 
     case wQ:
     case bQ:
-    BitmapToMoveList(pinnedSq , rectlookup[sq][board_state.KingSq[side]] & ( (get_bishop_attacks(pinnedSq , board_state.OccupancyMap) | get_rook_attacks(pinnedSq, board_state.OccupancyMap)) & ( captureBoard[side] | pushMask[side])),NO_SQ , false);
+    BitmapToMoveList(MoveList,pinnedSq , rectlookup[sq][board_state.KingSq[side]] & ( (get_bishop_attacks(pinnedSq , board_state.OccupancyMap) | get_rook_attacks(pinnedSq, board_state.OccupancyMap)) & ( captureBoard[side] | pushMask[side])),NO_SQ , false);
     break;
 
     default:
@@ -482,4 +484,18 @@ bool MoveGen::isSqAttacked(Board_State &board_state , int sq , int side , int En
  // danger squares and capture board . Both of which can be calculated by putting piece on square king and using occupancy 
  // remove square class and use int instead 
 
- 
+void MoveGen:: reset(){ 
+    // cout<<"DEBUG : RESET "<<sizeof(attackBoards)<<endl;
+    std::fill( &attackBoards[0][0], &attackBoards[2][0]  , 0ULL );
+    std::fill( kingDangerSquares, kingDangerSquares+2, 0ULL );
+    
+    std::fill( &captureBoard[0], &captureBoard[2], 0ULL );
+    std::fill( &kingCheckingPieces[0], &kingCheckingPieces[2], 0ULL );
+    std::fill( &pinnedPiecesMap[0], &pinnedPiecesMap[2], 0ULL );
+    std::fill( &pushMask[0], &pushMask[2], ~0ULL );
+    enPassantCaptureSquare = 0ULL;
+    std::fill( &num_checkers[0], &num_checkers[2], 0 );
+
+
+   
+    }

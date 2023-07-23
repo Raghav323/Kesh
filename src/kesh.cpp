@@ -3,8 +3,11 @@
 #include "../include/Square.hpp"
 #include "../include/Piece.hpp"
 #include "../include/movegen.hpp"
+#include "../include/MoveMaker.hpp"
+#include "../include/Engine.hpp"
 
 #include <iostream>
+#include <vector>
 
 #define TEST_FEN "rnbqkbnr/pppppppp/8/8/4P3/8/PPPP1PPP/RNBQKBNR b KQkq e3 0 1"
 #define TEST_FEN_2 "4k2r/6r1/8/8/8/8/3R4/R3K3 w Qk - 0 1"
@@ -33,21 +36,21 @@
 
 #define TEST_FEN_14 "8/4k3/7B/1N6/8/2Q4b/BQ2N1N1/5K2 w - - 0 1"
 
-#define TEST_FEN_15 "5NK1/1k1BP3/8/8/3Pp3/8/7B/7Q b - d3 0 1"
+#define TEST_FEN_15 "5q2/3BP2K/1k6/8/3Pp3/8/7B/7Q b - d3 0 1"
 
 #define TEST_FEN_16 "r3k2r/p1ppqpb1/bn2pnp1/3PN3/1p2P3/2N2Q1p/PPPBBPPP/R3K2R w KQkq - 0 1"
 
 // AttackBoards --> KingDanger --> KingInfo --> CaptureBoard --> MoveList
-int main(){
+int main(int argc, char* argv[]){
     AllInit();
-    Board_State board = Board_State(TEST_FEN_16);
+    // Board_State board = Board_State(TEST_FEN_15);
 
-    cout<<"Pieces Board  : "<<endl;
-    board.printBoard();
+    // cout<<"Pieces Board  : "<<endl;
+    // board.printBoard();
 
 
     // print_bitboard(board.OccupancyMapColor[0]);
-    MoveGen movegen;
+    // MoveGen movegen;
 
     
 //     movegen.update_attack_boards(board ,0);
@@ -91,12 +94,99 @@ int main(){
 
 //     print_bitboard(movegen.pinnedPiecesMap[0]);
 
-movegen.generate_moves(board , 0);
+// movegen.generate_moves(board , board.side);
 
-print_Move_list(movegen.moveList);
+// print_Move_list(movegen.moveList);
+
+// MoveMaker M(TEST_FEN_15);
 
 
+// U64 undo = M.MakeMove(movegen.moveList[8]);
+// M.board_state.printBoard();
+// cout<<endl;
+// M.UndoMove(undo);
+// M.board_state.printBoard();
+// cout<<endl;
+
+// movegen.generate_moves(M.board_state , M.board_state.side);
+// M.MakeMove(movegen.moveList[35]);
+// movegen.generate_moves(M.board_state , M.board_state.side);
+
+//print_Move_list(movegen.moveList);
+
+// for(auto move : movegen.moveList){
+//     M.MakeMove(move);
+//     M.board_state.printBoard();
+//     cout<<endl;
+//     // M.UnMakeMove(move);
+//     // M.board_state.printBoard();
+//     // cout<<endl;
+// }
+    // Engine chessEngine(START_POS);
+    
+    
+    // U64 total = chessEngine.perft(2,true);
+    // cout<<endl<<total<<endl;
+    // return 0;
 
 
+    // FOR PERFT TESTING ////////////////////
+    string moves="";
+    string FEN = argv[1];
+    // cout<<argv[2]<<endl;
+     int depth = stoi(argv[2]);
+     if(argc>3){
+   moves=argv[3];
+     }
+
+    Engine chessEngine(FEN);
+    chessEngine.moveMaker.parse_moves_string(moves);
+    U64 total = chessEngine.perft(depth,true);
+    cout<<endl<<total<<endl;
     return 0;
+
+
+    //////////////////////////////////////
+
+
+    // Engine chessEngine(START_POS);
+    // // chessEngine.moveMaker.parse_moves_string("a1a2");
+    // // chessEngine.moveMaker.board_state.printBoard();
+    // // cout<<endl;
+    // chessEngine.moveMaker.parse_moves_string("a2a3");
+    // chessEngine.moveMaker.board_state.printBoard();
+    // cout<<endl;
+    // chessEngine.moveMaker.parse_moves_string("a7a5");
+    // chessEngine.moveMaker.board_state.printBoard();
+    // cout<<endl;
+    // // chessEngine.moveMaker.parse_moves_string("h2h3");
+    // // chessEngine.moveMaker.board_state.printBoard();
+
+    // chessEngine.perft(2, true);
+    
+
+    // MoveGen movegen;
+    // vector<int> moveList;
+    // movegen.generate_moves(moveList, chessEngine.moveMaker.board_state, chessEngine.moveMaker.board_state.side);
+
+    // // print_Move_list(moveList);
+    // cout<<"NO OF MOVES FOR SIDE IN THIS POSITION BY MAKING MOVE AND MOVEGEN ARE : "<<moveList.size()<<endl;
+    // // cout<<"_____________________________________________________________"<<endl;
+    // MoveGen movegen2;
+    // vector<int> moveList2;
+    // Board_State ss = Board_State(Board_State("rnbqkbnr/1ppppppp/8/8/p7/3P4/PPPKPPPP/RNBQ1BNR w kq - 0 3"));
+    // movegen2.generate_moves(moveList2, ss, ss.side);
+    // print_Move_list(moveList2);
+    // cout<<"NO OF MOVES FOR SIDE IN THIS POSITION BY ONLY MOVEGEN ARE : "<<moveList2.size()<<endl;
+    // cout<<"_____________________________________________________________"<<endl;
+
+
+    // cout<<endl;
+
+    
+    // MoveMaker M(TEST_FEN_15);
+    // M.board_state.printBoard();
+    // M.parse_moves_string("e4d3 e7f8Q d3d2");
+    // M.board_state.printBoard();
+
 }
