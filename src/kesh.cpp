@@ -149,10 +149,20 @@ int main(int argc, char* argv[]){
     //////////////////////////////////////
 
 
-    // Engine chessEngine(START_POS);
-    // // chessEngine.moveMaker.parse_moves_string("a1a2");
+    // Engine chessEngine("r3k2r/p1ppqpb1/bn2pnp1/3PN3/1p2P3/2N2Q1P/PPPBBP2/1R2K2R b Kkq - 0 2");
+    // // chessEngine.moveMaker.parse_moves_string("g2g1r");
     // // chessEngine.moveMaker.board_state.printBoard();
-    // // cout<<endl;
+    // cout<<endl;
+    // U64 undo = chessEngine.moveMaker.MakeMove(24974);
+    // chessEngine.moveMaker.board_state.printBoard();
+    // cout<<endl;
+    // chessEngine.moveMaker.UndoMove(undo);
+    // chessEngine.moveMaker.board_state.printBoard();
+    // cout<<endl;
+    // U64 undo2 = chessEngine.moveMaker.MakeMove(29070);
+    // chessEngine.moveMaker.board_state.printBoard();
+    // cout<<endl;
+
     // chessEngine.moveMaker.parse_moves_string("a2a3");
     // chessEngine.moveMaker.board_state.printBoard();
     // cout<<endl;

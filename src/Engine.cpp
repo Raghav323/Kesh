@@ -31,7 +31,7 @@ U64 Engine::perft(int depth , bool root){
   }
 
   for (i = 0; i < moveList.size(); i++) {
-    Board_State B = moveMaker.board_state;
+    //Board_State B = moveMaker.board_state;
     U64 undo = moveMaker.MakeMove(moveList[i]);
 
     
@@ -39,7 +39,7 @@ U64 Engine::perft(int depth , bool root){
     
     nodes+=cnt;
     
-    // moveMaker.board_state=B;
+    //moveMaker.board_state=B;
     moveMaker.UndoMove(undo);
 
     //cout<<"AFTER UNDO SIDE : "<<moveMaker.board_state.side<<endl;

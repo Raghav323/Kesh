@@ -280,7 +280,7 @@ int MoveGen:: generate_moves(vector<int> &moveList , Board_State &board_state , 
       
     }
 
-    if ((board_state.castlePerm & WQCA) && ((board_state.OccupancyMap & 0x000000000000000eULL)==0 && (kingDangerSquares[side] & 0x000000000000000eULL )==0) && ((num_checkers[side])==0)){
+    if ((board_state.castlePerm & WQCA) && ((board_state.OccupancyMap & 0x000000000000000eULL)==0 && (kingDangerSquares[side] & 0x000000000000000cULL )==0) && ((num_checkers[side])==0)){
 
           moveList.push_back(4 |(2<<6) | (1<<15) | (1<<14) );
           
@@ -296,7 +296,7 @@ int MoveGen:: generate_moves(vector<int> &moveList , Board_State &board_state , 
          
     }
 
-    if((board_state.castlePerm & BQCA) && ((board_state.OccupancyMap & 0x0e00000000000000ULL)==0 && (kingDangerSquares[side] & 0x0e00000000000000ULL)==0) && ((num_checkers[side])==0)){
+    if((board_state.castlePerm & BQCA) && ((board_state.OccupancyMap & 0x0e00000000000000ULL)==0 && (kingDangerSquares[side] & 0x0c00000000000000ULL)==0) && ((num_checkers[side])==0)){
       {
           moveList.push_back(60 |(58<<6) | (1<<15) | (1<<14) );
           

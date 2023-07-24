@@ -152,6 +152,7 @@ void MoveMaker::UndoMove(U64 move){
         if (capturedPiece!=NO_PIECE){
         board_state.updatePieceBoard(board_state.piecePlacement[to], Piece((PieceType) capturedPiece , to), 1);
         }
+        board_state.side^=1;
         return ;
     }
 

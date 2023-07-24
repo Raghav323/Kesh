@@ -307,7 +307,7 @@ Board_State::Board_State(std::string FEN){
     // cout<<"Pointer after enPassant parse : "<<FEN[i]<<endl;
   
 
-
+    if(i<FEN.length()){
     while(FEN[i+j]!=' '){
        
     j++;
@@ -318,7 +318,7 @@ Board_State::Board_State(std::string FEN){
   
     fullMoves = stoi(FEN.substr(i+j+1,FEN.length()-i-j-1))  ;
     // cout<<"FULL MOVES DEBUG : "<<FEN[i+j+1]<<endl;
-    
+    }
    
 
 

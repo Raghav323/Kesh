@@ -87,16 +87,16 @@ void print_move(int move) {
   if (((move >> 14) & 0x3) == 1) {
     switch (((move >> 12) & 0x3) + 2) {
     case KNIGHT:
-      cout << "N";
+      cout << "n";
       break;
     case BISHOP:
-      cout << "B";
+      cout << "b";
       break;
     case ROOK:
-      cout << "R";
+      cout << "r";
       break;
     case QUEEN:
-      cout << "Q";
+      cout << "q";
       break;
     }
   }
