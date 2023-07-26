@@ -2,10 +2,12 @@
 #include "../include/Engine.hpp"
 
 
-Engine::Engine(string FEN){
-moveMaker = MoveMaker(FEN);
-movegen=MoveGen();
-// cout<<"Engine initialized side : "<<moveMaker.board_state.side<<endl;
+Engine::Engine(string FEN) :moveMaker(FEN) , movegen(){
+
+resetEngine();
+cout<<endl;
+cout << "Engine created" << endl;
+cout<<"---------------------------------"<<endl;
 }
 
 
@@ -17,6 +19,7 @@ U64 Engine::perft(int depth , bool root){
   U64 cnt=0;
   U64 nodes = 0;
   vector<int> moveList;
+  auto start = chrono::system_clock::now();
   movegen.generate_moves(moveList,moveMaker.board_state, moveMaker.board_state.side);
   //cout<<"DEBUG : "<<n_moves<<endl;
 
@@ -25,7 +28,7 @@ U64 Engine::perft(int depth , bool root){
     for(int i=0;i<moveList.size();i++){
         print_move(moveList[i]);
         cout<<" "<<1<<endl;
-    }
+    }cout<<endl<<endl;
     }
     return (U64) moveList.size();
   }
@@ -49,7 +52,20 @@ U64 Engine::perft(int depth , bool root){
     cout<<" "<<cnt<<endl;
     }
   }
+
+  if(root){
+    std::chrono::duration<double> elapsed_seconds = (chrono::system_clock::now())-start;
+  cout<<"Perft Complete :- Nodes Visited : "<<nodes<<" Time Elapsed: "\
+  <<elapsed_seconds.count()<<"s Depth: "<<depth<<endl<<endl;
+  }
   return nodes;
+
+  
 
 }
 
+
+void Engine::resetEngine(){
+  pvTable.clear();
+  pvTable.reserve(130000);
+};

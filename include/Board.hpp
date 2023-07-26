@@ -3,6 +3,7 @@
 
 #include "defs.hpp"
 #include "Square.hpp"
+#include "hash.hpp"
 
 
 class Board_State{
@@ -24,7 +25,7 @@ class Board_State{
 
     
 
-    U64 posKey;
+    U64 stateKey=0ULL;
 
     U64 OccupancyMap ;
 
@@ -35,8 +36,14 @@ class Board_State{
     U64 OccupancyMapP[2];
     U64 OccupancyMapN[2] ;
 
+    Zobrist hasher; 
+
+    
+
 
     // U64 piecesMap[13]={0ULL};
+
+    unordered_set<U64> history;
     
     std::unordered_map<PieceType,unordered_set<Square , Square::HashFunction >> pieceBoard ;
 
@@ -49,5 +56,7 @@ class Board_State{
 
 
     void resetBoard();
+
+    bool isRepetition();
 };
 

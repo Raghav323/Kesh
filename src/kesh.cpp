@@ -6,6 +6,7 @@
 #include "../include/MoveMaker.hpp"
 #include "../include/Engine.hpp"
 
+#include <climits>
 #include <iostream>
 #include <vector>
 
@@ -131,19 +132,33 @@ int main(int argc, char* argv[]){
 
 
     // FOR PERFT TESTING ////////////////////
-    string moves="";
-    string FEN = argv[1];
-    // cout<<argv[2]<<endl;
-     int depth = stoi(argv[2]);
-     if(argc>3){
-   moves=argv[3];
-     }
+//     string moves="";
+//     string FEN = argv[1];
+//     // cout<<argv[2]<<endl;
+//      int depth = stoi(argv[2]);
+//      if(argc>3){
+//    moves=argv[3];
+//      }
 
-    Engine chessEngine(FEN);
-    chessEngine.moveMaker.parse_moves_string(moves);
-    U64 total = chessEngine.perft(depth,true);
-    cout<<endl<<total<<endl;
-    return 0;
+//     Engine chessEngine(FEN);
+//     chessEngine.moveMaker.board_state.printBoard();
+     
+//     stack<U64> UNDO;
+//     chessEngine.moveMaker.parse_moves_string(UNDO,moves);
+//     chessEngine.moveMaker.board_state.printBoard();
+     
+
+
+//     while(!UNDO.empty()){
+      
+//         chessEngine.moveMaker.UndoMove(UNDO.top());
+//         UNDO.pop();
+//         chessEngine.moveMaker.board_state.printBoard();
+//     }
+    
+    // U64 total = chessEngine.perft(depth,true);
+    // cout<<endl<<total<<endl;
+   // return 0;
 
 
     //////////////////////////////////////
@@ -199,4 +214,39 @@ int main(int argc, char* argv[]){
     // M.parse_moves_string("e4d3 e7f8Q d3d2");
     // M.board_state.printBoard();
 
-}
+
+    string input ;
+    Engine chessEngine(START_POS);
+    stack<U64> undoMoves;
+    while(TRUE){
+        chessEngine.moveMaker.board_state.printBoard();
+        
+        cout<<"Enter a move :  ";
+        cin>>input;cout<<endl;
+        if  (input=="q"){
+                return 0;
+               
+        }
+        else if  (input=="t"){
+                if(!undoMoves.empty())
+                    chessEngine.moveMaker.UndoMove(undoMoves.top());undoMoves.pop();
+                    chessEngine.moveMaker.board_state.history.insert(chessEngine.moveMaker.board_state.stateKey);
+        }
+
+        else if(input.at(0)=='p'){
+            chessEngine.perft(1+input.at(1)-'1', true);
+        }
+        else{
+                chessEngine.moveMaker.parse_moves_string(undoMoves,input);
+                string repeated =  chessEngine.moveMaker.board_state.isRepetition() ? "Yes" : "No";
+                cout<<"Is this position repeated : "<<  repeated <<endl;
+                chessEngine.moveMaker.board_state.history.insert(chessEngine.moveMaker.board_state.stateKey);
+
+                
+        }
+                
+        cin.ignore(INT_MAX ,'\n');
+        
+        }
+        
+    }

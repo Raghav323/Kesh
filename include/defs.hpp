@@ -110,7 +110,8 @@ extern void init_rect_lookup();
 extern U64 xrayBishopAttacks(U64 occ, U64 blockers, int bishopSq);
 U64 xrayRookAttacks(U64 occ, U64 blockers, int rookSq) ;
 
-//init.cpp
+//random 
+
 
 
 #endif

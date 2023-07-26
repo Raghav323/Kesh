@@ -1,21 +1,25 @@
 #include "../include/MoveMaker.hpp"
 #include "../include/defs.hpp"
+#include <stack>
 
 
-MoveMaker::MoveMaker(string FEN){
-    board_state = Board_State(FEN);
+MoveMaker::MoveMaker(string FEN) :board_state(FEN){
+    // how to initialize using new in c++
 
+    
+    
     
 }
 
 
-MoveMaker::MoveMaker(){
-;
-}
+
 
 
 
 U64 MoveMaker::MakeMove(int move){
+
+   
+
 int from = move & 0x3F;
 int to = (move >> 6) & 0x3F;
 
@@ -75,10 +79,15 @@ if(((move>>14) & 0x3)==3){
 
 // // [0000] [000000] [0000] [0000 0000] [0000 0000 0000 0000]
 
-
+if(board_state.enPas!=NO_SQ){
+    board_state.hasher.hashPiece(NO_PIECE, board_state.enPas);
+}
+board_state.hasher.hashCastle(board_state.castlePerm);
 board_state.castlePerm &= CastlePerm[from];
 board_state.castlePerm &= CastlePerm[to];
+board_state.hasher.hashCastle(board_state.castlePerm);
 board_state.enPas = NO_SQ;
+
 board_state.ply++;
 
 if (board_state.piecePlacement[to].pieceOccupying!=NO_PIECE){
@@ -88,15 +97,20 @@ if (board_state.piecePlacement[to].pieceOccupying!=NO_PIECE){
 
 if(board_state.piecePlacement[from].pieceOccupying.pieceType == wP || board_state.piecePlacement[from].pieceOccupying.pieceType == bP){
     board_state.fiftyMove = 0;
+    
     if((from - to) == 16 || (from - to) == -16){
         board_state.enPas = (from + to)/2;
     }
+    board_state.hasher.hashPiece(NO_PIECE, board_state.enPas);
+
 }  
 
 if(((move>>14) & 0x3)==1){
     board_state.updatePieceBoard(board_state.piecePlacement[from], board_state.piecePlacement[from].pieceOccupying , 0);
     board_state.updatePieceBoard(board_state.piecePlacement[to], Piece((PieceTypeWithoutColor) (((move>>12) & 0x3) + 2) , (color)board_state.side , to), 1);
+    
     board_state.side^=1;
+    board_state.hasher.hashSide();
     return undoMove;
 }
 
@@ -104,6 +118,9 @@ if(((move>>14) & 0x3)==1){
  
  // cout<<"SIDE MAKING MOVE IS "<<board_state.side<<endl;
  board_state.side^=1;
+board_state.hasher.hashSide();
+
+   
 
  return undoMove;
 
@@ -115,7 +132,8 @@ void MoveMaker::UndoMove(U64 move){
 
     int side = board_state.side;
 
-    
+    board_state.history.erase(board_state.stateKey);
+
 
     if(((move>>14) & 0x3)==3){
         switch (to) {
@@ -137,12 +155,21 @@ void MoveMaker::UndoMove(U64 move){
         }
 
     }
-
+    if(board_state.enPas!=NO_SQ){
+        board_state.hasher.hashPiece(NO_PIECE, board_state.enPas);
+    }
+    board_state.hasher.hashCastle(board_state.castlePerm);
     board_state.castlePerm = (move >> 24) & 0xF;
+    board_state.hasher.hashCastle(board_state.castlePerm);
     board_state.fiftyMove = (move >> 16) & 0xFF;
     board_state.enPas = ((move >> 28) & 0x3F) ;
     int capturedPiece = (move >> 34) & 0xF;
     board_state.ply--;
+    board_state.fullMoves=board_state.ply/2;
+
+    if(board_state.enPas!=NO_SQ){
+        board_state.hasher.hashPiece(NO_PIECE, board_state.enPas);
+    }
 
     if(((move>>14) & 0x3)==1){
         color pawnC= board_state.piecePlacement[to].pieceOccupying.get_piece_color();
@@ -153,6 +180,7 @@ void MoveMaker::UndoMove(U64 move){
         board_state.updatePieceBoard(board_state.piecePlacement[to], Piece((PieceType) capturedPiece , to), 1);
         }
         board_state.side^=1;
+        board_state.hasher.hashSide();
         return ;
     }
 
@@ -181,10 +209,16 @@ void MoveMaker::UndoMove(U64 move){
 
 
 board_state.side^=1;
+board_state.hasher.hashSide();
+
+
+
+
 
 }
 
-void MoveMaker::parse_moves_string(string moves_string="") {
+void MoveMaker::parse_moves_string( stack<U64> &undoMoves,string moves_string=""  ) {
+   
   int i = 0;
   while (i < moves_string.length()) {
     if (moves_string[i] != ' ') {
@@ -196,7 +230,8 @@ void MoveMaker::parse_moves_string(string moves_string="") {
       if ((i<moves_string.length())&&(moves_string[i] == 'Q' || moves_string[i] == 'N' || moves_string[i] == 'R' || moves_string[i] == 'B' || moves_string[i] == 'q' || moves_string[i] == 'n' || moves_string[i] == 'r' || moves_string[i] == 'b')) {
         //cout<<"HERE ! "<<endl;
         int move = from | (to << 6) | (notation[moves_string[i]]<<12) | (1 << 14);
-        MakeMove(move);
+        undoMoves.push(MakeMove(move)); 
+        
         i += 1;
       }
 
@@ -216,7 +251,8 @@ void MoveMaker::parse_moves_string(string moves_string="") {
             }
            
         }
-        MakeMove(move);
+        undoMoves.push(MakeMove(move)); 
+        
         
       }
 

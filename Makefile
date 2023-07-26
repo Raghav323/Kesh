@@ -2,13 +2,13 @@
 # 	g++ -Wall -I../include -o Square.cpp kesh.cpp init.cpp BoardState.cpp Piece.cpp 
 	 
 CC = g++
-CFLAGS = -Wall -I../include
+CFLAGS = -Wall -I../include 
 
 SRCDIR = src
 OBJDIR = obj
 BINDIR = bin
 
-SRCS = Square.cpp kesh.cpp init.cpp Board.cpp Piece.cpp defs.cpp magics.cpp movegen.cpp MoveMaker.cpp Engine.cpp
+SRCS = Square.cpp kesh.cpp init.cpp Board.cpp Piece.cpp defs.cpp magics.cpp movegen.cpp MoveMaker.cpp Engine.cpp hash.cpp search.cpp
 OBJS = $(patsubst %.cpp,$(OBJDIR)/%.o,$(SRCS))
 EXECUTABLE = $(BINDIR)/kesh
 
