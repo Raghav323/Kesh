@@ -29,7 +29,7 @@ class MoveGen{
  
     void update_attack_boards(Board_State &board_state , int side );
     U64 get_attack_board_for_piece(Square sq ,  PieceType piece , U64 occupancy );
-    void update_KingMovesInfo(vector<int> &MoveList , Board_State &board_state , int side );
+    void update_KingMovesInfo( Board_State &board_state , int side );
     void update_capture_board(Board_State &board_state , int side );
     void update_push_mask( Board_State &BS  , U64 pieceAttack , int side , PieceTypeWithoutColor PT , int sq);
     int  generate_moves(vector<int> &moveList , Board_State &board_state , int side);
@@ -40,6 +40,9 @@ class MoveGen{
     void GenerateMovesForPinned(vector<int> &moveList,Board_State &board_state , int side);
     bool isSqAttacked(Board_State &board_state ,U64 occupancyMap, int sq , int side);
     bool isSqAttacked(Board_State &board_state , int sq , int side , int EnPassanting  );
+    int  generate_capture_moves(vector<int> &moveList , Board_State &board_state , int side);
+
+   
    
 
 };

@@ -117,7 +117,7 @@ void MoveGen::update_attack_boards(Board_State &board_state, int side) {
 
   
 // }
-void MoveGen::update_KingMovesInfo(vector<int>& MoveList , Board_State &board_state, int side) {
+void MoveGen::update_KingMovesInfo( Board_State &board_state, int side) {
   
 
   for (auto sq : board_state.pieceBoard[get_piece_type(BISHOP, side ^ 1)]) {
@@ -141,19 +141,12 @@ void MoveGen::update_KingMovesInfo(vector<int>& MoveList , Board_State &board_st
   kingDangerSquares[side] |= attackBoards[side ^ 1][2];
   kingDangerSquares[side] |= king_attacks[board_state.KingSq[1^side]];
 
-  U64 King_Moves =   king_attacks[board_state.KingSq[side]] &
-      ~(board_state.OccupancyMapColor[side] | kingDangerSquares[side]) ;
-  
-
-
-  BitmapToMoveList(MoveList,board_state.KingSq[side] , King_Moves ,NO_SQ , false);
-
   // moveList.push_back(make_pair(Piece(KING,(color) side,board_state.KingSq[side]), Moves[side][KING][0]));
 
 
 
   // attackBoards[side][KING] = King_Moves;
-  attackBoards[side][0] |= King_Moves;
+  
 }
 
 
@@ -187,7 +180,17 @@ int MoveGen:: generate_moves(vector<int> &moveList , Board_State &board_state , 
   reset();
   update_attack_boards(board_state ,0);
   update_attack_boards(board_state ,1);
-  update_KingMovesInfo(moveList,board_state, side);
+  update_KingMovesInfo(board_state, side);
+
+  U64 King_Moves =   king_attacks[board_state.KingSq[side]] &
+      ~(board_state.OccupancyMapColor[side] | kingDangerSquares[side]) ;
+  
+
+
+  BitmapToMoveList(moveList,board_state.KingSq[side] , King_Moves ,NO_SQ , false);
+
+  attackBoards[side][0] |= King_Moves;
+
   update_enPasssantInfo(board_state, side);
   update_capture_board(board_state, side);
 
@@ -312,6 +315,148 @@ int MoveGen:: generate_moves(vector<int> &moveList , Board_State &board_state , 
 
 
 }
+
+int MoveGen:: generate_capture_moves(vector<int> &moveList , Board_State &board_state , int side){
+
+  reset();
+  update_attack_boards(board_state ,0);
+  update_attack_boards(board_state ,1);
+  update_KingMovesInfo(board_state, side);
+
+  U64 King_Moves =   (king_attacks[board_state.KingSq[side]] &
+      ~(board_state.OccupancyMapColor[side] | kingDangerSquares[side])) & board_state.OccupancyMapColor[side^1] ;
+  
+ 
+
+  BitmapToMoveList(moveList,board_state.KingSq[side] , King_Moves ,NO_SQ , false);
+  attackBoards[side][0] |= King_Moves;
+
+  update_enPasssantInfo(board_state, side);
+  update_capture_board(board_state, side);
+
+
+  if(num_checkers[side]>1){return moveList.size();;}
+
+  GenerateMovesForPinned(moveList,board_state , side);
+
+  // if(num_checkers[side]!=0){
+  // //update_push_mask(board_state, side);
+  // }
+
+  // get all pawn pieces 
+
+  for(auto sq : board_state.pieceBoard[get_piece_type(PAWN,side)]){
+    int sqNo = sq.squareNo;
+    if(get_bit(pawn_attacks[side][sqNo],board_state.enPas)){
+      // cout<<"EPASCAP" <<enPassantCaptureSquare<<endl;
+       //cout<<"DEBUG "<<"IS ATTACKED ??  "<<isSqAttacked(board_state, (board_state.OccupancyMap|(1ULL<<board_state.enPas)) & (~((1ULL<<sqNo) | (enPassantCaptureSquare))), board_state.KingSq[side], side)<<endl;
+      // cout<<"DEBUG 3 : "<<endl;
+      
+     // print_bitboard((board_state.OccupancyMap|(1ULL<<board_state.enPas)) & (~ ((1ULL<<sqNo) | enPassantCaptureSquare )));
+      if(  ( ( (enPassantCaptureSquare & captureBoard[side])!=0ULL) | (get_bit(pushMask[side], board_state.enPas) ) )  && (!isSqAttacked(board_state, board_state.KingSq[side], side,sqNo))  ){
+        BitmapToMoveList(moveList,sqNo , board_state.enPas  , board_state.enPas , false);
+      }
+
+
+      
+      
+    }
+
+  
+    if(!get_bit(pinnedPiecesMap[side],sqNo)){
+      
+      BitmapToMoveList(moveList,sqNo , (pawn_attacks[side][sqNo] & captureBoard [side]),NO_SQ , (48<=sqNo && sqNo<=55 && side==WHITE) || (8<=sqNo && sqNo<=15 && side==BLACK));
+
+    }
+
+    
+
+  }
+
+  // get all knight pieces
+
+  for(auto sq : board_state.pieceBoard[get_piece_type(KNIGHT,side)]){
+    int sqNo = sq.squareNo;
+    if(get_bit(pinnedPiecesMap[side],sqNo)){
+      continue;
+    }
+
+    BitmapToMoveList(moveList,sqNo , (knight_attacks[sqNo] & ( captureBoard[side])),NO_SQ , false);
+  }
+
+  // get all bishop pieces
+
+  for(auto sq : board_state.pieceBoard[get_piece_type(BISHOP,side)]){
+    int sqNo = sq.squareNo;
+    if(get_bit(pinnedPiecesMap[side],sqNo)){
+      continue;
+    }
+
+    BitmapToMoveList(moveList,sqNo , (get_bishop_attacks(sqNo , board_state.OccupancyMap) & ( captureBoard[side] )),NO_SQ , false);
+  }
+
+  // get all rook pieces
+
+  for(auto sq : board_state.pieceBoard[get_piece_type(ROOK,side)]){
+    int sqNo = sq.squareNo;
+    if(get_bit(pinnedPiecesMap[side],sqNo)){
+      continue;
+    }
+    BitmapToMoveList(moveList, sqNo , (get_rook_attacks(sqNo , board_state.OccupancyMap) & ( captureBoard[side] )),NO_SQ , false);
+  }
+
+  // get all queen pieces
+
+  for(auto sq : board_state.pieceBoard[get_piece_type(QUEEN,side)]){
+    int sqNo = sq.squareNo;
+    if(get_bit(pinnedPiecesMap[side],sqNo)){
+      continue;
+    }
+    BitmapToMoveList(moveList , sqNo , (get_bishop_attacks(sqNo , board_state.OccupancyMap) | get_rook_attacks(sqNo , board_state.OccupancyMap)) & ( captureBoard[side] ),NO_SQ , false);
+  }
+
+  // castle moves 
+  //cout<<"CASTLE PERMISSIONS " <<board_state.castlePerm<<endl;
+  if(side==WHITE){
+    if((board_state.castlePerm & WKCA) && ((board_state.OccupancyMap & 0x0000000000000060ULL)==0 && (kingDangerSquares[side] & 0x0000000000000060ULL)==0) && ((num_checkers[side])==0)){
+          moveList.push_back(4 |(6<<6) | (1<<15) | (1<<14) );
+      
+    }
+
+    if ((board_state.castlePerm & WQCA) && ((board_state.OccupancyMap & 0x000000000000000eULL)==0 && (kingDangerSquares[side] & 0x000000000000000cULL )==0) && ((num_checkers[side])==0)){
+
+          moveList.push_back(4 |(2<<6) | (1<<15) | (1<<14) );
+          
+      
+    }
+  }
+
+  else{
+    //cout<<"DEBUG CASTLE  "<<((board_state.OccupancyMap & 0x6000000000000000ULL)==0 && (kingDangerSquares[side] & 0x6000000000000000ULL)==0)<<endl;
+    if((board_state.castlePerm & BKCA) && ((board_state.OccupancyMap & 0x6000000000000000ULL)==0 && (kingDangerSquares[side] & 0x6000000000000000ULL)==0) && ((num_checkers[side])==0)){
+
+           moveList.push_back(60 |(62<<6) | (1<<15) | (1<<14) );
+         
+    }
+
+    if((board_state.castlePerm & BQCA) && ((board_state.OccupancyMap & 0x0e00000000000000ULL)==0 && (kingDangerSquares[side] & 0x0c00000000000000ULL)==0) && ((num_checkers[side])==0)){
+      {
+          moveList.push_back(60 |(58<<6) | (1<<15) | (1<<14) );
+          
+      
+    }
+  }
+
+
+  }
+
+  return moveList.size();
+
+
+
+}
+
+
 
  void MoveGen::update_enPasssantInfo(Board_State &board_state , int side){
    if(board_state.enPas>0 && ( pawn_attacks[1^side][board_state.enPas] | board_state.OccupancyMapColor[side])){
@@ -483,6 +628,8 @@ bool MoveGen::isSqAttacked(Board_State &board_state , int sq , int side , int En
  // remove looping through all pieces and making attack mask . Attack mask is used only for king 
  // danger squares and capture board . Both of which can be calculated by putting piece on square king and using occupancy 
  // remove square class and use int instead 
+// score based sorting of moves faster than what we are doing right now
+
 
 void MoveGen:: reset(){ 
     // cout<<"DEBUG : RESET "<<sizeof(attackBoards)<<endl;

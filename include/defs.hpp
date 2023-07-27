@@ -16,6 +16,7 @@ typedef unsigned long long U64;
 
 #define NAME "Kesh 1.0"
 #define MAX_DEPTH 64
+#define MAX_BCUTS_STORED 4
 
 #define MAXGAMEMOVES 2048
 #define BOARD_SQ 64

@@ -2,12 +2,16 @@
 #include "MoveMaker.hpp"
 #include "defs.hpp"
 #include "movegen.hpp"
+#include "moveorder.hpp"
 #include <unordered_map>
 
 class Search {
 public:
   MoveMaker moveMaker;
   MoveGen movegen;
+
+  MoveOrderer moveOrderer;
+
   Search(string FEN = START_POS,int depth=1);
   U64 perft(int depth, bool root);
   void resetSearch();
@@ -32,5 +36,7 @@ public:
   int stopped ;
   float fh ;
   float fhf ;
+
+   
 
 };

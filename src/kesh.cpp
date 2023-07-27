@@ -42,6 +42,10 @@
 #define TEST_FEN_16                                                            \
   "r3k2r/p1ppqpb1/bn2pnp1/3PN3/1p2P3/2N2Q1p/PPPBBPPP/R3K2R w KQkq - 0 1"
 
+#define TEST_FEN_17 "5n2/5k2/3P1ppp/p2PpN2/2b3P1/6PP/P2B1K2/8 w - - 0 1"
+
+#define TEST_FEN_18 "r1b1k2r/ppppnppp/2n2q2/2b5/3NP3/2P1B3/PP3PPP/RN1QKB1R w KQkq - 0 1"
+
 // AttackBoards --> KingDanger --> KingInfo --> CaptureBoard --> MoveList
 int main(int argc, char *argv[]) {
   AllInit();
@@ -203,7 +207,7 @@ int main(int argc, char *argv[]) {
   
 
   string input;
-  Search chessSearch("5n2/5k2/3P1ppp/p2PpN2/2b3P1/6PP/P2B1K2/8 w - - 0 1");
+  Search chessSearch(TEST_FEN_18);
  
 
 
@@ -234,6 +238,17 @@ int main(int argc, char *argv[]) {
     else if(input.at(0)=='s'){
       chessSearch.depth = 1+input.at(1) - '1';
       chessSearch.searchPos();
+    }
+
+    else if(input=="c"){
+      vector<int> moves ; 
+      chessSearch.movegen.generate_capture_moves(moves, chessSearch.moveMaker.board_state, chessSearch.moveMaker.board_state.side);
+      for(auto move : moves){
+
+        
+        print_move(move);cout<<endl;
+      }
+      cout<<endl;
     }
     
     else {
