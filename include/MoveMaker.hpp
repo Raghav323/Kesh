@@ -13,11 +13,11 @@ Board_State board_state;
 
 
 
-U64 MakeMove(int move);
-void UndoMove(U64 move);
+void MakeMove(int move);
+void UndoMove();
 MoveMaker(string FEN=START_POS);
 // MoveMaker();
-void parse_moves_string(stack<U64> &undoMoves,string moves_string) ;
+void parse_moves_string(vector<int>& , string moves_string) ;
 
 
 

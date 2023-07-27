@@ -1,10 +1,10 @@
-#include "../include/defs.hpp"
 #include "../include/Board.hpp"
-#include "../include/Square.hpp"
-#include "../include/Piece.hpp"
-#include "../include/movegen.hpp"
 #include "../include/MoveMaker.hpp"
-#include "../include/Engine.hpp"
+#include "../include/Piece.hpp"
+#include "../include/Search.hpp"
+#include "../include/Square.hpp"
+#include "../include/defs.hpp"
+#include "../include/movegen.hpp"
 
 #include <climits>
 #include <iostream>
@@ -39,214 +39,219 @@
 
 #define TEST_FEN_15 "5q2/3BP2K/1k6/8/3Pp3/8/7B/7Q b - d3 0 1"
 
-#define TEST_FEN_16 "r3k2r/p1ppqpb1/bn2pnp1/3PN3/1p2P3/2N2Q1p/PPPBBPPP/R3K2R w KQkq - 0 1"
+#define TEST_FEN_16                                                            \
+  "r3k2r/p1ppqpb1/bn2pnp1/3PN3/1p2P3/2N2Q1p/PPPBBPPP/R3K2R w KQkq - 0 1"
 
 // AttackBoards --> KingDanger --> KingInfo --> CaptureBoard --> MoveList
-int main(int argc, char* argv[]){
-    AllInit();
-    // Board_State board = Board_State(TEST_FEN_15);
+int main(int argc, char *argv[]) {
+  AllInit();
+  // Board_State board = Board_State(TEST_FEN_15);
 
-    // cout<<"Pieces Board  : "<<endl;
-    // board.printBoard();
+  // cout<<"Pieces Board  : "<<endl;
+  // board.printBoard();
 
+  // print_bitboard(board.OccupancyMapColor[0]);
+  // MoveGen movegen;
 
-    // print_bitboard(board.OccupancyMapColor[0]);
-    // MoveGen movegen;
+  //     movegen.update_attack_boards(board ,0);
+  //     movegen.update_attack_boards(board ,1);
 
-    
-//     movegen.update_attack_boards(board ,0);
-//     movegen.update_attack_boards(board ,1);
+  //     movegen.update_KingMovesInfo(board, 0);
 
+  //     movegen.update_enPasssantInfo(board , 0);
+  //     movegen.update_capture_board(board, 0);
 
-//     movegen.update_KingMovesInfo(board, 0);
+  //     // print_bitboard(movegen.kingMoves[1] );
 
+  //    cout<<"Attack Board  : "<<endl;
+  //     print_bitboard(movegen.attackBoards[0][0] );
 
-//     movegen.update_enPasssantInfo(board , 0);
-//     movegen.update_capture_board(board, 0);
-    
-//     // print_bitboard(movegen.kingMoves[1] );
+  //     cout<<"Capture  Board  : "<<endl;
 
-//    cout<<"Attack Board  : "<<endl;
-//     print_bitboard(movegen.attackBoards[0][0] );
+  //     print_bitboard(movegen.captureBoard[0] );
 
+  //     cout<<"Num checkers : "<<movegen.num_checkers[0]<<endl;
 
-//     cout<<"Capture  Board  : "<<endl;
+  //     cout<<"Check bitboard : ";
+  //     print_bitboard(movegen.kingCheckingPieces[0]);cout<<endl;
 
-//     print_bitboard(movegen.captureBoard[0] );
+  //     cout<<"Push Mask : "; print_bitboard(movegen.pushMask[0]);cout<<endl;
 
-//     cout<<"Num checkers : "<<movegen.num_checkers[0]<<endl;
+  //     cout<<"DEBUG : "<<endl;
+  //     // print_bitboard(get_pawn_moves(54, 1, (1ULL)<<38));
 
-//     cout<<"Check bitboard : "; print_bitboard(movegen.kingCheckingPieces[0]);cout<<endl;
+  //     print_bitboard(xrayBishopAttacks(board.OccupancyMap,
+  //     board.OccupancyMapColor[0], board.KingSq[0]));
+  //     // cout<<"King Moves : ";
+  //     print_bitboard(movegen.Moves[1][KING][0]);cout<<endl;
 
-//     cout<<"Push Mask : "; print_bitboard(movegen.pushMask[0]);cout<<endl;
+  //     cout<<"BQ BITBOARD : "<<endl;
+  //     print_bitboard(board.OccupancyMapBQ[0]);
 
-//     cout<<"DEBUG : "<<endl;
-//     // print_bitboard(get_pawn_moves(54, 1, (1ULL)<<38));
+  //     cout<<"ALL PINNED PIECCE :  "<<endl;
 
-//     print_bitboard(xrayBishopAttacks(board.OccupancyMap, board.OccupancyMapColor[0], board.KingSq[0]));
-//     // cout<<"King Moves : "; print_bitboard(movegen.Moves[1][KING][0]);cout<<endl;
+  //     movegen.GenerateMovesForPinned(board , 0);
 
-//     cout<<"BQ BITBOARD : "<<endl;
-//     print_bitboard(board.OccupancyMapBQ[0]);
+  //     print_bitboard(movegen.pinnedPiecesMap[0]);
 
-//     cout<<"ALL PINNED PIECCE :  "<<endl;
+  // movegen.generate_moves(board , board.side);
 
-//     movegen.GenerateMovesForPinned(board , 0);
+  // print_Move_list(movegen.moveList);
 
-//     print_bitboard(movegen.pinnedPiecesMap[0]);
+  // MoveMaker M(TEST_FEN_15);
 
-// movegen.generate_moves(board , board.side);
+  // U64 undo = M.MakeMove(movegen.moveList[8]);
+  // M.board_state.printBoard();
+  // cout<<endl;
+  // M.UndoMove(undo);
+  // M.board_state.printBoard();
+  // cout<<endl;
 
-// print_Move_list(movegen.moveList);
+  // movegen.generate_moves(M.board_state , M.board_state.side);
+  // M.MakeMove(movegen.moveList[35]);
+  // movegen.generate_moves(M.board_state , M.board_state.side);
 
-// MoveMaker M(TEST_FEN_15);
+  // print_Move_list(movegen.moveList);
 
+  // for(auto move : movegen.moveList){
+  //     M.MakeMove(move);
+  //     M.board_state.printBoard();
+  //     cout<<endl;
+  //     // M.UnMakeMove(move);
+  //     // M.board_state.printBoard();
+  //     // cout<<endl;
+  // }
+  // Search chessSearch(START_POS);
 
-// U64 undo = M.MakeMove(movegen.moveList[8]);
-// M.board_state.printBoard();
-// cout<<endl;
-// M.UndoMove(undo);
-// M.board_state.printBoard();
-// cout<<endl;
+  // U64 total = chessSearch.perft(2,true);
+  // cout<<endl<<total<<endl;
+  // return 0;
 
-// movegen.generate_moves(M.board_state , M.board_state.side);
-// M.MakeMove(movegen.moveList[35]);
-// movegen.generate_moves(M.board_state , M.board_state.side);
+  // FOR PERFT TESTING ////////////////////
+  //     string moves="";
+  //     string FEN = argv[1];
+  //     // cout<<argv[2]<<endl;
+  //      int depth = stoi(argv[2]);
+  //      if(argc>3){
+  //    moves=argv[3];
+  //      }
 
-//print_Move_list(movegen.moveList);
-
-// for(auto move : movegen.moveList){
-//     M.MakeMove(move);
-//     M.board_state.printBoard();
-//     cout<<endl;
-//     // M.UnMakeMove(move);
-//     // M.board_state.printBoard();
-//     // cout<<endl;
-// }
-    // Engine chessEngine(START_POS);
-    
-    
-    // U64 total = chessEngine.perft(2,true);
-    // cout<<endl<<total<<endl;
-    // return 0;
-
-
-    // FOR PERFT TESTING ////////////////////
-//     string moves="";
-//     string FEN = argv[1];
-//     // cout<<argv[2]<<endl;
-//      int depth = stoi(argv[2]);
-//      if(argc>3){
-//    moves=argv[3];
-//      }
-
-//     Engine chessEngine(FEN);
-//     chessEngine.moveMaker.board_state.printBoard();
-     
-//     stack<U64> UNDO;
-//     chessEngine.moveMaker.parse_moves_string(UNDO,moves);
-//     chessEngine.moveMaker.board_state.printBoard();
-     
-
-
-//     while(!UNDO.empty()){
+  //     Search chessSearch(FEN);
       
-//         chessEngine.moveMaker.UndoMove(UNDO.top());
-//         UNDO.pop();
-//         chessEngine.moveMaker.board_state.printBoard();
-//     }
-    
-    // U64 total = chessEngine.perft(depth,true);
-    // cout<<endl<<total<<endl;
-   // return 0;
+      
+
+  // U64 total = chessSearch.perft(depth,true);
+  // cout<<endl<<total<<endl;
+  // return 0;
+
+  //////////////////////////////////////
+
+  // Search chessSearch("r3k2r/p1ppqpb1/bn2pnp1/3PN3/1p2P3/2N2Q1P/PPPBBP2/1R2K2R
+  // b Kkq - 0 2");
+  // // chessSearch.moveMaker.parse_moves_string("g2g1r");
+  // // chessSearch.moveMaker.board_state.printBoard();
+  // cout<<endl;
+  // U64 undo = chessSearch.moveMaker.MakeMove(24974);
+  // chessSearch.moveMaker.board_state.printBoard();
+  // cout<<endl;
+  // chessSearch.moveMaker.UndoMove(undo);
+  // chessSearch.moveMaker.board_state.printBoard();
+  // cout<<endl;
+  // U64 undo2 = chessSearch.moveMaker.MakeMove(29070);
+  // chessSearch.moveMaker.board_state.printBoard();
+  // cout<<endl;
+
+  // chessSearch.moveMaker.parse_moves_string("a2a3");
+  // chessSearch.moveMaker.board_state.printBoard();
+  // cout<<endl;
+  // chessSearch.moveMaker.parse_moves_string("a7a5");
+  // chessSearch.moveMaker.board_state.printBoard();
+  // cout<<endl;
+  // // chessSearch.moveMaker.parse_moves_string("h2h3");
+  // // chessSearch.moveMaker.board_state.printBoard();
+
+  // chessSearch.perft(2, true);
+
+  // MoveGen movegen;
+  // vector<int> moveList;
+  // movegen.generate_moves(moveList, chessSearch.moveMaker.board_state,
+  // chessSearch.moveMaker.board_state.side);
+
+  // // print_Move_list(moveList);
+  // cout<<"NO OF MOVES FOR SIDE IN THIS POSITION BY MAKING MOVE AND MOVEGEN ARE
+  // : "<<moveList.size()<<endl;
+  // //
+  // cout<<"_____________________________________________________________"<<endl;
+  // MoveGen movegen2;
+  // vector<int> moveList2;
+  // Board_State ss =
+  // Board_State(Board_State("rnbqkbnr/1ppppppp/8/8/p7/3P4/PPPKPPPP/RNBQ1BNR w
+  // kq - 0 3")); movegen2.generate_moves(moveList2, ss, ss.side);
+  // print_Move_list(moveList2);
+  // cout<<"NO OF MOVES FOR SIDE IN THIS POSITION BY ONLY MOVEGEN ARE :
+  // "<<moveList2.size()<<endl;
+  // cout<<"_____________________________________________________________"<<endl;
+
+  // cout<<endl;
+
+  // MoveMaker M(TEST_FEN_15);
+  // M.board_state.printBoard();
+  // M.parse_moves_string("e4d3 e7f8Q d3d2");
+  // M.board_state.printBoard();
 
 
-    //////////////////////////////////////
+  
+
+  string input;
+  Search chessSearch("5n2/5k2/3P1ppp/p2PpN2/2b3P1/6PP/P2B1K2/8 w - - 0 1");
+ 
 
 
-    // Engine chessEngine("r3k2r/p1ppqpb1/bn2pnp1/3PN3/1p2P3/2N2Q1P/PPPBBP2/1R2K2R b Kkq - 0 2");
-    // // chessEngine.moveMaker.parse_moves_string("g2g1r");
-    // // chessEngine.moveMaker.board_state.printBoard();
-    // cout<<endl;
-    // U64 undo = chessEngine.moveMaker.MakeMove(24974);
-    // chessEngine.moveMaker.board_state.printBoard();
-    // cout<<endl;
-    // chessEngine.moveMaker.UndoMove(undo);
-    // chessEngine.moveMaker.board_state.printBoard();
-    // cout<<endl;
-    // U64 undo2 = chessEngine.moveMaker.MakeMove(29070);
-    // chessEngine.moveMaker.board_state.printBoard();
-    // cout<<endl;
+  while (TRUE) {
+    chessSearch.moveMaker.board_state.printBoard();
 
-    // chessEngine.moveMaker.parse_moves_string("a2a3");
-    // chessEngine.moveMaker.board_state.printBoard();
-    // cout<<endl;
-    // chessEngine.moveMaker.parse_moves_string("a7a5");
-    // chessEngine.moveMaker.board_state.printBoard();
-    // cout<<endl;
-    // // chessEngine.moveMaker.parse_moves_string("h2h3");
-    // // chessEngine.moveMaker.board_state.printBoard();
+    cout << "Enter a move :  ";
+    cin >> input;
+    cout << endl;
+    if (input == "q") {
+      return 0;
 
-    // chessEngine.perft(2, true);
-    
+    } else if (input == "t") {
 
-    // MoveGen movegen;
-    // vector<int> moveList;
-    // movegen.generate_moves(moveList, chessEngine.moveMaker.board_state, chessEngine.moveMaker.board_state.side);
-
-    // // print_Move_list(moveList);
-    // cout<<"NO OF MOVES FOR SIDE IN THIS POSITION BY MAKING MOVE AND MOVEGEN ARE : "<<moveList.size()<<endl;
-    // // cout<<"_____________________________________________________________"<<endl;
-    // MoveGen movegen2;
-    // vector<int> moveList2;
-    // Board_State ss = Board_State(Board_State("rnbqkbnr/1ppppppp/8/8/p7/3P4/PPPKPPPP/RNBQ1BNR w kq - 0 3"));
-    // movegen2.generate_moves(moveList2, ss, ss.side);
-    // print_Move_list(moveList2);
-    // cout<<"NO OF MOVES FOR SIDE IN THIS POSITION BY ONLY MOVEGEN ARE : "<<moveList2.size()<<endl;
-    // cout<<"_____________________________________________________________"<<endl;
-
-
-    // cout<<endl;
-
-    
-    // MoveMaker M(TEST_FEN_15);
-    // M.board_state.printBoard();
-    // M.parse_moves_string("e4d3 e7f8Q d3d2");
-    // M.board_state.printBoard();
-
-
-    string input ;
-    Engine chessEngine(START_POS);
-    stack<U64> undoMoves;
-    while(TRUE){
-        chessEngine.moveMaker.board_state.printBoard();
-        
-        cout<<"Enter a move :  ";
-        cin>>input;cout<<endl;
-        if  (input=="q"){
-                return 0;
-               
-        }
-        else if  (input=="t"){
-                if(!undoMoves.empty())
-                    chessEngine.moveMaker.UndoMove(undoMoves.top());undoMoves.pop();
-                    chessEngine.moveMaker.board_state.history.insert(chessEngine.moveMaker.board_state.stateKey);
-        }
-
-        else if(input.at(0)=='p'){
-            chessEngine.perft(1+input.at(1)-'1', true);
-        }
-        else{
-                chessEngine.moveMaker.parse_moves_string(undoMoves,input);
-                string repeated =  chessEngine.moveMaker.board_state.isRepetition() ? "Yes" : "No";
-                cout<<"Is this position repeated : "<<  repeated <<endl;
-                chessEngine.moveMaker.board_state.history.insert(chessEngine.moveMaker.board_state.stateKey);
-
-                
-        }
-                
-        cin.ignore(INT_MAX ,'\n');
-        
-        }
-        
+        chessSearch.moveMaker.UndoMove();
+        chessSearch.moveMaker.board_state.registerUndoMove();
+      
+      
     }
+    else if(input=="pv"){
+      chessSearch.get_pv_line();
+    }
+
+    else if (input.at(0) == 'p') {
+      chessSearch.perft(1 + input.at(1) - '1', true);
+    } 
+    
+    else if(input.at(0)=='s'){
+      chessSearch.depth = 1+input.at(1) - '1';
+      chessSearch.searchPos();
+    }
+    
+    else {
+       vector<int> moves ; 
+      chessSearch.moveMaker.parse_moves_string(moves , input);
+      for(auto move : moves){
+
+        chessSearch.moveMaker.MakeMove(move);
+        chessSearch.moveMaker.board_state.registerMove();
+        cout<<endl;
+      }
+      
+
+
+      
+
+    }
+
+    cin.ignore(INT_MAX, '\n');
+  }
+}

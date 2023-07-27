@@ -16,7 +16,7 @@ MoveMaker::MoveMaker(string FEN) :board_state(FEN){
 
 
 
-U64 MoveMaker::MakeMove(int move){
+void MoveMaker::MakeMove(int move){
 
    
 
@@ -90,6 +90,8 @@ board_state.enPas = NO_SQ;
 
 board_state.ply++;
 
+board_state.fiftyMove++;
+
 if (board_state.piecePlacement[to].pieceOccupying!=NO_PIECE){
     board_state.fiftyMove = 0;
     board_state.updatePieceBoard(board_state.piecePlacement[to], board_state.piecePlacement[to].pieceOccupying, 0);
@@ -111,7 +113,8 @@ if(((move>>14) & 0x3)==1){
     
     board_state.side^=1;
     board_state.hasher.hashSide();
-    return undoMove;
+    board_state.undoStack.push(undoMove);
+    return ;
 }
 
  board_state.MovePiece(from, to); 
@@ -122,11 +125,16 @@ board_state.hasher.hashSide();
 
    
 
- return undoMove;
-
+  board_state.undoStack.push(undoMove);
 }
 
-void MoveMaker::UndoMove(U64 move){
+void MoveMaker::UndoMove(){
+
+    if(board_state.undoStack.empty()){
+        cout<<"ERROR : CANNOT UNDO FROM START POSITION !"<<endl<<endl;
+        return ;
+    }
+    U64 move = board_state.undoStack.top();board_state.undoStack.pop();
     int from = move & 0x3F;
     int to = (move >> 6) & 0x3F;
 
@@ -217,7 +225,7 @@ board_state.hasher.hashSide();
 
 }
 
-void MoveMaker::parse_moves_string( stack<U64> &undoMoves,string moves_string=""  ) {
+void MoveMaker::parse_moves_string(vector<int> & MoveList , string moves_string=""  ) {
    
   int i = 0;
   while (i < moves_string.length()) {
@@ -229,8 +237,10 @@ void MoveMaker::parse_moves_string( stack<U64> &undoMoves,string moves_string=""
       i += 4;
       if ((i<moves_string.length())&&(moves_string[i] == 'Q' || moves_string[i] == 'N' || moves_string[i] == 'R' || moves_string[i] == 'B' || moves_string[i] == 'q' || moves_string[i] == 'n' || moves_string[i] == 'r' || moves_string[i] == 'b')) {
         //cout<<"HERE ! "<<endl;
-        int move = from | (to << 6) | (notation[moves_string[i]]<<12) | (1 << 14);
-        undoMoves.push(MakeMove(move)); 
+        MoveList.push_back(from | (to << 6) | (notation[moves_string[i]]<<12) | (1 << 14));
+       
+        
+        
         
         i += 1;
       }
@@ -251,7 +261,7 @@ void MoveMaker::parse_moves_string( stack<U64> &undoMoves,string moves_string=""
             }
            
         }
-        undoMoves.push(MakeMove(move)); 
+        MoveList.push_back(move);
         
         
       }

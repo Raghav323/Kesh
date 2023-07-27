@@ -8,7 +8,7 @@ SRCDIR = src
 OBJDIR = obj
 BINDIR = bin
 
-SRCS = Square.cpp kesh.cpp init.cpp Board.cpp Piece.cpp defs.cpp magics.cpp movegen.cpp MoveMaker.cpp Engine.cpp hash.cpp search.cpp
+SRCS = Square.cpp kesh.cpp init.cpp Board.cpp Piece.cpp defs.cpp magics.cpp movegen.cpp MoveMaker.cpp Search.cpp hash.cpp search.cpp evaluate.cpp
 OBJS = $(patsubst %.cpp,$(OBJDIR)/%.o,$(SRCS))
 EXECUTABLE = $(BINDIR)/kesh
 

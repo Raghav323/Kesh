@@ -15,6 +15,7 @@ using namespace std;
 typedef unsigned long long U64;
 
 #define NAME "Kesh 1.0"
+#define MAX_DEPTH 64
 
 #define MAXGAMEMOVES 2048
 #define BOARD_SQ 64
@@ -78,8 +79,9 @@ extern  int PAWN_PUSH_DIRECTION[2];
 extern  U64 rectlookup[64][64];
 
 extern const int CastlePerm[64];
-// extern int Sq120ToSq64[BOARD_SQ];
-// extern int Sq64ToSq120[64];
+
+
+
 
 /* FUNCTIONS */
 
@@ -111,6 +113,8 @@ extern U64 xrayBishopAttacks(U64 occ, U64 blockers, int bishopSq);
 U64 xrayRookAttacks(U64 occ, U64 blockers, int rookSq) ;
 
 //random 
+
+//eval 
 
 
 

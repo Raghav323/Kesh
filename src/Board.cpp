@@ -20,6 +20,9 @@ void Board_State::printBoard()
         std::cout << "Ply: " << ply << std::endl;
         std::cout << "His Ply: " << hisPly << std::endl;
         std::cout << "State Key: " << stateKey << std::endl;
+        std::cout << "White EVAL: " << eval[0] << std::endl;
+        std::cout << "BLACK EVAL: " << eval[1] << std::endl;
+        
         // cout<<"Full Moves Made : " << fullMoves <<endl;
         cout<<endl;
         cout<<endl;
@@ -29,6 +32,8 @@ void Board_State::printBoard()
     }
 
 void Board_State::updatePieceBoard(Square sq , Piece piece , bool add){
+
+    
     if(add){
 
        
@@ -76,6 +81,7 @@ void Board_State::updatePieceBoard(Square sq , Piece piece , bool add){
         piece.pieceSquare = sq.squareNo;
         set_bit(OccupancyMap, sq.squareNo);
         set_bit(OccupancyMapColor[piece.get_piece_color()], sq.squareNo);
+        increment_evalPos(sq, piece, 1);
         // set_bit(piecesMap[piece.pieceType], sq.squareNo);
 
     }
@@ -129,7 +135,7 @@ void Board_State::updatePieceBoard(Square sq , Piece piece , bool add){
         clear_bit(OccupancyMap, sq.squareNo);
         // clear_bit(piecesMap[piece.pieceType], sq.squareNo);
         clear_bit(OccupancyMapColor[piece.get_piece_color()], sq.squareNo);
-
+        increment_evalPos(sq, piece, 0);
     }
 
 
@@ -346,6 +352,9 @@ void Board_State::resetBoard(){
     fiftyMove = 0 ;
     castlePerm = 0;
     history.clear();
+    undoStack = stack<U64>();
+    
+
     ply = 0;
     hisPly = 0 ;
     
@@ -353,7 +362,7 @@ void Board_State::resetBoard(){
 
     OccupancyMap = 0ULL;
     
-    
+     fill(eval, eval+2, 0);
     fill(KingSq, KingSq+2, NO_SQ);
     fill(OccupancyMapColor, OccupancyMapColor+2, 0ULL);
     fill(OccupancyMapBQ, OccupancyMapBQ+2, 0ULL);
