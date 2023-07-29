@@ -3,29 +3,36 @@
 #include "../include/Board.hpp"
 
 
-void Board_State::printBoard()
+void Board_State::printBoard () 
 {
-        std::cout << "Piece Placement: " << std::endl;
+        std::cout << std::endl<<std::endl;
         for(int rank = RANK_8; rank >= RANK_1; rank--){
             for(int file = FILE_A; file <= FILE_H; file++){
                 int sq = FR2SQ(file,rank);
-                std::cout << piecePlacement[sq].pieceOccupying.pieceType << " ";
+                std::cout << pieceChars[piecePlacement[sq].pieceOccupying.pieceType] << " ";
             }
             std::cout << std::endl;
         }
-        std::cout << "Side: " << side << std::endl;
-        std::cout << "EnPas: " << enPas << std::endl;
-        std::cout << "Fifty Move: " << fiftyMove << std::endl;
-        std::cout << "Castle Perm: " << castlePerm << std::endl;
-        std::cout << "Ply: " << ply << std::endl;
-        std::cout << "His Ply: " << hisPly << std::endl;
-        std::cout << "State Key: " << stateKey << std::endl;
-        std::cout << "White EVAL: " << eval[0] << std::endl;
-        std::cout << "BLACK EVAL: " << eval[1] << std::endl;
+        std::cout << std::endl;
+        std::cout << "Side: " << (side == WHITE ? "WHITE" : "BLACK") << std::endl;
+        std::cout << "EnPassant Square: " ;
+        
+        if (enPas == NO_SQ){
+            cout<<"-"; }
+        else{ print_square(enPas);}
+        
+        cout<<std::endl;
+        // std::cout << "Fifty Move: " << fiftyMove << std::endl;
+        std::cout << "Castle: " << castlePermissionsToKQkq(castlePerm)<< std::endl;
+        // std::cout << "Ply: " << ply << std::endl;
+        // std::cout << "His Ply: " << hisPly << std::endl;
+        std::cout << "State Key: " << hex<<stateKey<<dec<< std::endl;
+        // std::cout << "White EVAL: " << eval[0] << std::endl;
+        // std::cout << "BLACK EVAL: " << eval[1] << std::endl;
         
         // cout<<"Full Moves Made : " << fullMoves <<endl;
         cout<<endl;
-        cout<<endl;
+       
        
 
 
@@ -354,7 +361,6 @@ void Board_State::resetBoard(){
     history.clear();
     undoStack = stack<U64>();
     
-
     ply = 0;
     hisPly = 0 ;
     

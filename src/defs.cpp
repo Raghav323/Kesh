@@ -10,6 +10,68 @@ const int CastlePerm[64] = {
     15, 15, 15, 15, 15, 15, 15, 15, 15, 15, 15, 15, 15, 15, 15, 15,
     15, 15, 15, 15, 15, 15, 15, 15, 7,  15, 15, 15, 3,  15, 15, 11};
 
+
+const int MvvLva[13][13] = {-1, -1, -1, -1, -1 , -1 , -1 , -1 , -1 , -1 , -1 , -1 , -1,
+                            -1, 107 , 207 , 227 , 407 , 507 , 607 ,107 , 207 , 227 , 407 , 507 , 607 ,
+                            -1 , 106 , 206 , 226 , 406 , 506 , 606 ,106 , 206 , 226 , 406 , 506 , 606,
+                            -1 , 105 , 205 , 225 , 405 , 505 , 605 ,105 , 205 , 225 , 405 , 505 , 605,
+                            -1 , 104 , 204 , 224 , 404 , 504 , 604 ,104 , 204 , 224 , 404 , 504 , 604,
+                            -1 , 103 , 203 , 223 , 403 , 503 , 603 ,103 , 203 , 223 , 403 , 503 , 603,
+                            -1 , 102 , 202 , 222 , 402 , 502 , 602 ,102 , 202 , 222 , 402 , 502 , 602,
+                            -1, 107 , 207 , 227 , 407 , 507 , 607 ,107 , 207 , 227 , 407 , 507 , 607 ,
+                            -1 , 106 , 206 , 226 , 406 , 506 , 606 ,106 , 206 , 226 , 406 , 506 , 606,
+                            -1 , 105 , 205 , 225 , 405 , 505 , 605 ,105 , 205 , 225 , 405 , 505 , 605,
+                            -1 , 104 , 204 , 224 , 404 , 504 , 604 ,104 , 204 , 224 , 404 , 504 , 604,
+                            -1 , 103 , 203 , 223 , 403 , 503 , 603 ,103 , 203 , 223 , 403 , 503 , 603,
+                            -1 , 102 , 202 , 222 , 402 , 502 , 602 ,102 , 202 , 222 , 402 , 502 , 602
+
+                            };
+
+
+const char pieceChars[13] = {
+    /* 0 */ '-', // No piece
+    /* 1 */ 'P', // White Pawn
+    /* 2 */ 'N', // White Knight
+    /* 3 */ 'B', // White Bishop
+    /* 4 */ 'R', // White Rook
+    /* 5 */ 'Q', // White Queen
+    /* 6 */ 'K', // White King
+    /* 7 */ 'p', // Black Pawn
+    /* 8 */ 'n', // Black Knight
+    /* 9 */ 'b', // Black Bishop
+    /* 10 */ 'r', // Black Rook
+    /* 11 */ 'q', // Black Queen
+    /* 12 */ 'k'  // Black King
+};
+
+
+std::string castlePermissionsToKQkq(int permissions) {
+    std::string result;
+
+    if (permissions & 1) // If '1' bit is set, white can kingside castle
+        result += "K";
+    else
+        result += "-";
+
+    if (permissions & 2) // If '2' bit is set, white can queenside castle
+        result += "Q";
+    else
+        result += "-";
+
+    if (permissions & 4) // If '4' bit is set, black can kingside castle
+        result += "k";
+    else
+        result += "-";
+
+    if (permissions & 8) // If '8' bit is set, black can queenside castle
+        result += "q";
+    else
+        result += "-";
+
+    return result;
+}
+
+
 int count_bits(U64 bitboard) {
   // bit count
   int count = 0;
@@ -64,10 +126,7 @@ void print_Move_list(vector<int> moveList) {
   cout << "\n";
   for (int i = 0; i < moveList.size(); i++) {
     int move = moveList[i];
-    cout << "Move " << i << " ";
-    cout << "FROM SQ : " << (move & 0x3f) << " TO SQ : " << ((move >> 6) & 0x3f)
-         << " PROMOTION : " << ((move >> 12) & 0x3)
-         << " SPECIAL : " << ((move >> 14) & 0x3) << endl;
+    print_move(move);
     cout << "\n";
   }
   cout << "\n";
@@ -79,7 +138,9 @@ void print_square(int sqNo) {
 
 void print_move(int move) {
   // write for me copilot
-
+  if(move==0){
+    cout<<"No move found"<<endl;
+  }
   int from = (move & 0x3f);
   int to = ((move >> 6) & 0x3f);
   print_square(from);

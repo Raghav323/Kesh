@@ -206,67 +206,71 @@ int main(int argc, char *argv[]) {
 
   
 
-  string input;
-  Search chessSearch(TEST_FEN_18);
+  // string input;
+  // Search chessSearch(TEST_FEN_18);
  
 
 
-  while (TRUE) {
-    chessSearch.moveMaker.board_state.printBoard();
+  // while (TRUE) {
+  //   chessSearch.moveMaker.board_state.printBoard();
 
-    cout << "Enter a move :  ";
-    cin >> input;
-    cout << endl;
-    if (input == "q") {
-      return 0;
+  //   cout << "Enter a move :  ";
+  //   cin >> input;
+  //   cout << endl;
+  //   if (input == "q") {
+  //     return 0;
 
-    } else if (input == "t") {
+  //   } else if (input == "t") {
 
-        chessSearch.moveMaker.UndoMove();
-        chessSearch.moveMaker.board_state.registerUndoMove();
+  //       chessSearch.moveMaker.UndoMove();
+  //       chessSearch.moveMaker.board_state.registerUndoMove();
       
       
-    }
-    else if(input=="pv"){
-      chessSearch.get_pv_line();
-    }
+  //   }
+  //   else if(input=="pv"){
+  //     chessSearch.get_pv_line();
+  //   }
 
-    else if (input.at(0) == 'p') {
-      chessSearch.perft(1 + input.at(1) - '1', true);
-    } 
+  //   else if (input.at(0) == 'p') {
+  //     chessSearch.perft(1 + input.at(1) - '1', true);
+  //   } 
     
-    else if(input.at(0)=='s'){
-      chessSearch.depth = 1+input.at(1) - '1';
-      chessSearch.searchPos();
-    }
+  //   else if(input.at(0)=='s'){
+  //     chessSearch.depth = 1+input.at(1) - '1';
+  //     chessSearch.starttime = chrono::system_clock::now();
+  //     chessSearch.stoptime = chessSearch.starttime + chrono::milliseconds(200);
+  //     chessSearch.searchPos();
+  //   }
 
-    else if(input=="c"){
-      vector<int> moves ; 
-      chessSearch.movegen.generate_capture_moves(moves, chessSearch.moveMaker.board_state, chessSearch.moveMaker.board_state.side);
-      for(auto move : moves){
+  //   else if(input=="c"){
+  //     vector<int> moves ; 
+  //     chessSearch.movegen.generate_capture_moves(moves, chessSearch.moveMaker.board_state, chessSearch.moveMaker.board_state.side);
+  //     for(auto move : moves){
 
         
-        print_move(move);cout<<endl;
-      }
-      cout<<endl;
-    }
+  //       print_move(move);cout<<endl;
+  //     }
+  //     cout<<endl;
+  //   }
     
-    else {
-       vector<int> moves ; 
-      chessSearch.moveMaker.parse_moves_string(moves , input);
-      for(auto move : moves){
+  //   else {
+  //      vector<int> moves ; 
+  //     chessSearch.moveMaker.parse_moves_string(moves , input);
+  //     for(auto move : moves){
 
-        chessSearch.moveMaker.MakeMove(move);
-        chessSearch.moveMaker.board_state.registerMove();
-        cout<<endl;
-      }
+  //       chessSearch.moveMaker.MakeMove(move);
+  //       chessSearch.moveMaker.board_state.registerMove();
+  //       cout<<endl;
+  //     }
       
 
 
       
 
-    }
+  //   }
 
-    cin.ignore(INT_MAX, '\n');
-  }
+  //   cin.ignore(INT_MAX, '\n');
+  // }
+    uci_loop();
+
 }

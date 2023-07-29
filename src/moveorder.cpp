@@ -24,13 +24,22 @@ MoveOrderer::MoveOrderer(Board_State* board_state){
       return false;
     }
 
-    if(((*piecePlacement)[(move1>>6) & 0x3F]).pieceOccupying !=NO_PIECE && ((*piecePlacement)[(move2>>6) & 0x3F]).pieceOccupying ==NO_PIECE){
-        return true;
-    }
-    if(((*piecePlacement)[(move2>>6) & 0x3F]).pieceOccupying !=NO_PIECE && ((*piecePlacement)[(move1>>6) & 0x3F]).pieceOccupying ==NO_PIECE){
-        return false;
-    }
+    int move1_from_piece = ((*piecePlacement)[(move1) & 0x3F]).pieceOccupying.pieceType;
+    int move2_from_piece = ((*piecePlacement)[(move2) & 0x3F]).pieceOccupying.pieceType;
+    int move1_to_piece = ((*piecePlacement)[(move1>>6) & 0x3F]).pieceOccupying.pieceType;
+    int move2_to_piece = ((*piecePlacement)[(move2>>6) & 0x3F]).pieceOccupying.pieceType;
 
+    // if(((*piecePlacement)[(move1>>6) & 0x3F]).pieceOccupying !=NO_PIECE && ((*piecePlacement)[(move2>>6) & 0x3F]).pieceOccupying ==NO_PIECE){
+    //     return true;
+    // }
+    // if(((*piecePlacement)[(move2>>6) & 0x3F]).pieceOccupying !=NO_PIECE && ((*piecePlacement)[(move1>>6) & 0x3F]).pieceOccupying ==NO_PIECE){
+    //     return false;
+    // }
+
+
+     if(move1_to_piece!=NO_PIECE || move2_to_piece!=NO_PIECE){
+        return (MvvLva[move1_from_piece] [move1_to_piece] > MvvLva[move2_from_piece][move2_to_piece]);
+    }
 
     bool x1 = (*betaCutters)[ply].find(move1) != (*betaCutters)[ply].end();
     bool x2 = (*betaCutters)[ply].find(move2) != (*betaCutters)[ply].end();
@@ -64,4 +73,11 @@ void MoveOrderer::sortMoves(vector<int> &moveList, int pl , int pvMove) {
 
     
     std::sort(moveList.begin(), moveList.end(),comparator (pl, pvMove, &(board_state->piecePlacement), &betaCutters, alphaImprovers));
+  
   }
+
+void MoveOrderer::reset(){
+    betaCutters = * new vector<unordered_set<int>>(MAX_DEPTH,unordered_set<int>(MAX_BCUTS_STORED));
+
+    std::fill( &alphaImprovers[0][0], &alphaImprovers[13][0]  , 0ULL );
+}

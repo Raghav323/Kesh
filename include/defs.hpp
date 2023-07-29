@@ -16,7 +16,8 @@ typedef unsigned long long U64;
 
 #define NAME "Kesh 1.0"
 #define MAX_DEPTH 64
-#define MAX_BCUTS_STORED 4
+#define MAX_BCUTS_STORED 10
+#define PVTABLESIZE 131072
 
 #define MAXGAMEMOVES 2048
 #define BOARD_SQ 64
@@ -80,7 +81,8 @@ extern  int PAWN_PUSH_DIRECTION[2];
 extern  U64 rectlookup[64][64];
 
 extern const int CastlePerm[64];
-
+extern const int MvvLva[13][13];
+extern const char pieceChars[13] ;
 
 
 
@@ -93,6 +95,9 @@ extern  PieceType get_piece_type(PieceTypeWithoutColor pieceTypeWithoutColor, in
 extern void print_Move_list(vector<int> moveList);
 extern void init_castle_map();
 extern void print_move(int move);
+extern void uci_loop();
+extern std::string castlePermissionsToKQkq(int permissions);
+extern void print_square(int sqNo);
 
 /* MAGIC */
 extern void init_sliders_attacks(int);
@@ -116,6 +121,7 @@ U64 xrayRookAttacks(U64 occ, U64 blockers, int rookSq) ;
 //random 
 
 //eval 
+
 
 
 

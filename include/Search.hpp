@@ -1,3 +1,4 @@
+#pragma once
 #include "Board.hpp"
 #include "MoveMaker.hpp"
 #include "defs.hpp"
@@ -12,7 +13,7 @@ public:
 
   MoveOrderer moveOrderer;
 
-  Search(string FEN = START_POS,int depth=1);
+  Search(string FEN = START_POS);
   U64 perft(int depth, bool root);
   void resetSearch();
   unordered_map<U64, int> pvTable;
@@ -26,14 +27,16 @@ public:
 
 
   std::chrono::time_point<std::chrono::system_clock> starttime ;
-  std::chrono::time_point<std::chrono::system_clock> stoptime ;
+    std::chrono::time_point<std::chrono::system_clock> stoptime ;
+
+   
   int depth ;
-  int timeset ;
+  bool timeset ;
   int movestogo ;
   int infinite ;
   long nodes;
-  int quit ;
-  int stopped ;
+  bool quit ;
+  bool stopped ;
   float fh ;
   float fhf ;
 

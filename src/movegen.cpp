@@ -415,41 +415,7 @@ int MoveGen:: generate_capture_moves(vector<int> &moveList , Board_State &board_
     BitmapToMoveList(moveList , sqNo , (get_bishop_attacks(sqNo , board_state.OccupancyMap) | get_rook_attacks(sqNo , board_state.OccupancyMap)) & ( captureBoard[side] ),NO_SQ , false);
   }
 
-  // castle moves 
-  //cout<<"CASTLE PERMISSIONS " <<board_state.castlePerm<<endl;
-  if(side==WHITE){
-    if((board_state.castlePerm & WKCA) && ((board_state.OccupancyMap & 0x0000000000000060ULL)==0 && (kingDangerSquares[side] & 0x0000000000000060ULL)==0) && ((num_checkers[side])==0)){
-          moveList.push_back(4 |(6<<6) | (1<<15) | (1<<14) );
-      
-    }
-
-    if ((board_state.castlePerm & WQCA) && ((board_state.OccupancyMap & 0x000000000000000eULL)==0 && (kingDangerSquares[side] & 0x000000000000000cULL )==0) && ((num_checkers[side])==0)){
-
-          moveList.push_back(4 |(2<<6) | (1<<15) | (1<<14) );
-          
-      
-    }
-  }
-
-  else{
-    //cout<<"DEBUG CASTLE  "<<((board_state.OccupancyMap & 0x6000000000000000ULL)==0 && (kingDangerSquares[side] & 0x6000000000000000ULL)==0)<<endl;
-    if((board_state.castlePerm & BKCA) && ((board_state.OccupancyMap & 0x6000000000000000ULL)==0 && (kingDangerSquares[side] & 0x6000000000000000ULL)==0) && ((num_checkers[side])==0)){
-
-           moveList.push_back(60 |(62<<6) | (1<<15) | (1<<14) );
-         
-    }
-
-    if((board_state.castlePerm & BQCA) && ((board_state.OccupancyMap & 0x0e00000000000000ULL)==0 && (kingDangerSquares[side] & 0x0c00000000000000ULL)==0) && ((num_checkers[side])==0)){
-      {
-          moveList.push_back(60 |(58<<6) | (1<<15) | (1<<14) );
-          
-      
-    }
-  }
-
-
-  }
-
+  
   return moveList.size();
 
 
@@ -629,7 +595,9 @@ bool MoveGen::isSqAttacked(Board_State &board_state , int sq , int side , int En
  // danger squares and capture board . Both of which can be calculated by putting piece on square king and using occupancy 
  // remove square class and use int instead 
 // score based sorting of moves faster than what we are doing right now
-
+// pick random move if time is too low 
+// lot of problems with unordered maps 
+// learn about stack and heap memory and allocate properly 
 
 void MoveGen:: reset(){ 
     // cout<<"DEBUG : RESET "<<sizeof(attackBoards)<<endl;

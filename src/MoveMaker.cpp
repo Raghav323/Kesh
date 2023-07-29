@@ -88,7 +88,8 @@ board_state.castlePerm &= CastlePerm[to];
 board_state.hasher.hashCastle(board_state.castlePerm);
 board_state.enPas = NO_SQ;
 
-board_state.ply++;
+board_state.hisPly++;
+
 
 board_state.fiftyMove++;
 
@@ -172,7 +173,8 @@ void MoveMaker::UndoMove(){
     board_state.fiftyMove = (move >> 16) & 0xFF;
     board_state.enPas = ((move >> 28) & 0x3F) ;
     int capturedPiece = (move >> 34) & 0xF;
-    board_state.ply--;
+    board_state.hisPly--;
+
     board_state.fullMoves=board_state.ply/2;
 
     if(board_state.enPas!=NO_SQ){

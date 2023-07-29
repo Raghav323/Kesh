@@ -1,14 +1,19 @@
 #include "../include/Search.hpp"
 #include "../include/defs.hpp"
 #include "../include/evaluate.hpp"
+#include <chrono>
 #include <climits>
+#include "../include/misc.hpp"
 
 #define MATE 29000
 
-Search::Search(string FEN, int depth)
+Search::Search(string FEN)
     : moveMaker(FEN), movegen(), moveOrderer(&moveMaker.board_state) {
+      resetSearch();
+        pvTable.clear();
+        pvTable.reserve(PVTABLESIZE);
 
-  this->depth = depth;
+  // this->depth = depth;
   // cout << endl;
   // cout << "Search created" << endl;
   // cout << "---------------------------------" << endl;
@@ -16,20 +21,30 @@ Search::Search(string FEN, int depth)
 
 int Search::get_pv_line() {
 
-  cout << "PV LINE : ";
+  cout << " pv ";
   while (pvTable.find(moveMaker.board_state.stateKey) != pvTable.end()) {
 
     int move = pvTable[moveMaker.board_state.stateKey];
+    // if(move==0){
+    //   break;
+    // }
     print_move(move);
     cout << " ";
     moveMaker.MakeMove(move);
+    moveMaker.board_state.ply++;
+
     moveMaker.board_state.registerMove();
+    // cout<< "STATE KEY : "<<moveMaker.board_state.stateKey<<endl;
+    // cout<<"PLY : "<<moveMaker.board_state.ply<<endl;
+
   }
   cout << endl;
 
   while (moveMaker.board_state.ply > 0) {
 
     moveMaker.UndoMove();
+    moveMaker.board_state.ply--;
+
     moveMaker.board_state.registerUndoMove();
   }
 
@@ -62,6 +77,7 @@ U64 Search::perft(int depth, bool root) {
   for (i = 0; i < moveList.size(); i++) {
     // Board_State B = moveMaker.board_state;
     moveMaker.MakeMove(moveList[i]);
+    moveMaker.board_state.ply++;
     moveMaker.board_state.registerMove();
 
     cnt = perft(depth - 1, false);
@@ -70,6 +86,8 @@ U64 Search::perft(int depth, bool root) {
 
     // moveMaker.board_state=B;
     moveMaker.UndoMove();
+    moveMaker.board_state.ply--;
+
     moveMaker.board_state.registerUndoMove();
 
     // cout<<"AFTER UNDO SIDE : "<<moveMaker.board_state.side<<endl;
@@ -93,45 +111,77 @@ U64 Search::perft(int depth, bool root) {
 }
 
 void Search::resetSearch() {
-  pvTable.clear();
-  pvTable.reserve(130000);
   moveMaker.board_state.ply = 0;
   nodes = 0;
   starttime = chrono::system_clock::now();
-  stopped = 0;
+  stopped = false;
   fh = 0;
   fhf = 0;
+  timeset=false;
+  quit=false;
+  
 };
 
 void Search::checkUp() {
   // check if time up
+  if(timeset && (chrono::system_clock::now() > stoptime)  ){
+    stopped=true;
+  }
+
+   if (InputWaiting()) {
+        stopped = true;
+        std::string input;
+        std::getline(std::cin, input);
+
+        if (input.length() > 0) {
+            if (input == "quit") {
+                quit = true;
+            }
+        }
+    }
 }
 
 void Search::searchPos() {
-  resetSearch();
-  int bestScore = INT_MIN;
+  // resetSearch();
+  if(pvTable.size()>PVTABLESIZE-1000){
+    pvTable.clear();
+    pvTable.reserve(PVTABLESIZE);
+    }
+  moveOrderer.reset();
+ 
+  int bestScore = -INT_MAX;
   int bestmove = 0;
 
   for (int d = 1; d <= depth; d++) {
-    cout << "--------------------------------------------------------------"
-         << endl;
-    bestScore = AlphaBeta(-2147483647, 2147483647, d);
+    
+    bestScore = AlphaBeta(-INT_MAX, INT_MAX, d);
+    // cout<<"DEBUG 3"<<endl;
+    if (stopped) {
+      break;
+    }
 
-    // out of time ??
-
+    
+    cout << "info score cp " << bestScore << " depth "
+         << d  << " nodes " << nodes << " time " << (chrono::duration_cast<chrono::milliseconds>((chrono::system_clock::now() - starttime) )).count();
     bestmove = get_pv_line();
-    cout << "INFO score  " << bestScore << " bestmove " << bestmove << " depth "
-         << d  << " nodes " << nodes << endl;
-
-    if (fh != 0)
-      cout << "Ordering : " << (fhf / fh) << endl;
-    cout << "--------------------------------------------------------------"
-         << endl;
+    // if (fh != 0)
+    //   cout << "Ordering : " << (fhf / fh) << endl;
+    
   }
+
+  cout<<"bestmove ";print_move(bestmove);cout<<endl;
 }
 
 int Search::Quiescense(int alpha, int beta) {
+      // cout<<"DEBUGGGG"<<endl;
 
+  if((nodes & 2047)==0){
+    checkUp();
+  }
+
+  nodes++;
+
+  
   if (moveMaker.board_state.ply > MAX_DEPTH - 1) {
     return evalPos(moveMaker.board_state);
   }
@@ -148,35 +198,46 @@ int Search::Quiescense(int alpha, int beta) {
 
   int bestMove = 0;
   int oldAlpha = alpha;
-  score = -2147483647;
+  score = -INT_MAX;
   vector<int> moveList;
   movegen.generate_capture_moves(moveList, moveMaker.board_state,
                                  moveMaker.board_state.side);
-
+  
+  pvTable.find(moveMaker.board_state.stateKey)!=pvTable.end() ? moveOrderer.sortMoves(moveList, moveMaker.board_state.ply,pvTable.at(moveMaker.board_state.stateKey)) : moveOrderer.sortMoves(moveList, moveMaker.board_state.ply , 0);
+  
+  // cout<<"INSIDE QUIESCENCE "<<endl;
+  // print_Move_list(moveList);cout<<endl;
   for (int i = 0; i < moveList.size(); i++) {
     // Board_State B = moveMaker.board_state;
     moveMaker.MakeMove(moveList[i]);
-    score =
-        moveMaker.board_state.isRepetition() ? 0 : -Quiescense(-beta, -alpha);
-
+    moveMaker.board_state.ply++;
     moveMaker.board_state.registerMove();
+
+    score = -Quiescense(-beta, -alpha);
+
 
     // moveMaker.board_state.printBoard();
     // cout<<"Score : "<<score<<endl<<endl;
 
     // moveMaker.board_state=B;
     moveMaker.UndoMove();
+        moveMaker.board_state.ply--;
+
     moveMaker.board_state.registerUndoMove();
+
+    if(stopped){
+      return 0;
+    }
 
     if (score > alpha) {
       if (score >= beta) {
         // cout<<"Depth :  "<<depth<<"Alpha value : "<<alpha<<" Score :
         // "<<score<<endl; cout<<"Depth :  "<<depth<<"Beta value : "<<beta<<"
         // Score : "<<score<<endl;
-        if (i == 0) {
-          fhf++;
-        }
-        fh++;
+        // if (i == 0) {
+        //   // fhf++;
+        // }
+        // fh++;
         return beta;
       }
 
@@ -187,20 +248,30 @@ int Search::Quiescense(int alpha, int beta) {
     }
   }
 
-  if (alpha != oldAlpha) {
-
+  if (alpha != oldAlpha ) {
+   //  cout<<"TABLE SIZE IS :  "<<pvTable.size() <<endl;
     pvTable[moveMaker.board_state.stateKey] = bestMove;
   }
 
   return alpha;
 }
+
+
+
+
+
 int Search::AlphaBeta(int alpha, int beta, int depth) {
 
   if (depth == 0) {
 
-    nodes++;
-    return evalPos(moveMaker.board_state);
-    //return Quiescense(alpha, beta);
+    
+    //return evalPos(moveMaker.board_state);
+    return Quiescense(alpha, beta);
+  }
+
+  if((nodes & 2047)==0){
+    checkUp();
+    
   }
 
   nodes++;
@@ -212,46 +283,73 @@ int Search::AlphaBeta(int alpha, int beta, int depth) {
     // cout<<"DEBUG 0"<<endl;
     return 0;
   }
-
+  
   vector<int> moveList;
-  int score = -2147483647;
+  int score = -INT_MAX;
   int bestMove = 0;
   int oldAlpha = alpha;
   movegen.generate_moves(moveList, moveMaker.board_state,
                          moveMaker.board_state.side);
 
 
-  moveOrderer.sortMoves(moveList, moveMaker.board_state.ply,pvTable[moveMaker.board_state.stateKey]);
+  //moveOrderer.heapifyMoves(moveList, moveMaker.board_state.ply,pvTable[moveMaker.board_state.stateKey]);
 
-  for (int i = 0; i < moveList.size(); i++) {
+  pvTable.find(moveMaker.board_state.stateKey)!=pvTable.end() ? moveOrderer.sortMoves(moveList, moveMaker.board_state.ply,pvTable.at(moveMaker.board_state.stateKey)) : moveOrderer.sortMoves(moveList, moveMaker.board_state.ply , 0);
 
-    moveMaker.MakeMove(moveList[i]);
-    score = moveMaker.board_state.isRepetition()
-                ? 0
-                : -AlphaBeta(-beta, -alpha, depth - 1);
 
-    moveMaker.board_state.registerMove();
+
+  // print_Move_list(moveList);
+
+
+  for(int i=0;i<moveList.size();i++){
+    int currentMove = moveList[i];
+    // int currentMove = moveList.back();moveList.pop_back();
+    // int currentMove = moveOrderer.popMove(moveList, moveMaker.board_state.ply,pvTable[moveMaker.board_state.stateKey]);
+    moveMaker.MakeMove(currentMove);
+    moveMaker.board_state.ply++;
+    if( moveMaker.board_state.isRepetition()){
+      score =0;
+      moveMaker.board_state.registerMove();
+    }
+    else{
+      moveMaker.board_state.registerMove();
+      score = -AlphaBeta(-beta, -alpha, depth - 1);
+      
+    }
+   
+
+    
 
     moveMaker.UndoMove();
+    moveMaker.board_state.ply--;
     moveMaker.board_state.registerUndoMove();
+
+    if(stopped){
+      return 0;
+    }
 
     if (score > alpha) {
 
       if (score >= beta) {
 
-        if (i == 0) {
-          fhf++;
-        }
-        fh++;
-        moveOrderer.registerBetaCutter(moveList[i], moveMaker.board_state.ply);
+        // if (i == 0) {
+        //   // fhf++;
+        // }
+        // fh++;
+        moveOrderer.registerBetaCutter(currentMove, moveMaker.board_state.ply);
         return beta;
       }
 
-      bestMove = moveList[i];
+      bestMove = currentMove;
+              // cout<<"DEBUGGGG"<<endl;
+              // cout<<"BMOVE :"<<bestMove<<endl;
+
       moveOrderer.registerAlphaImprover(bestMove, depth, score - alpha);
+              // cout<<"DEBUGGGG2"<<endl;
 
       alpha = score;
     }
+ 
   }
 
   if (moveList.size() == 0) {
@@ -264,8 +362,9 @@ int Search::AlphaBeta(int alpha, int beta, int depth) {
     }
   }
 
-  if (alpha != oldAlpha) {
+  if (alpha != oldAlpha ) {
     // cout<<"HIIIIIIIIII"<<endl;
+    // cout<<"TABLE SIZE IS :  "<<pvTable.size() <<endl;
     pvTable[moveMaker.board_state.stateKey] = bestMove;
   }
 
