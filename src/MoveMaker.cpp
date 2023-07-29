@@ -80,12 +80,12 @@ if(((move>>14) & 0x3)==3){
 // // [0000] [000000] [0000] [0000 0000] [0000 0000 0000 0000]
 
 if(board_state.enPas!=NO_SQ){
-    board_state.hasher.hashPiece(NO_PIECE, board_state.enPas);
+    board_state.stateKey=board_state.hasher.hashPiece(board_state.stateKey,NO_PIECE, board_state.enPas);
 }
-board_state.hasher.hashCastle(board_state.castlePerm);
+board_state.stateKey=board_state.hasher.hashCastle(board_state.stateKey,board_state.castlePerm);
 board_state.castlePerm &= CastlePerm[from];
 board_state.castlePerm &= CastlePerm[to];
-board_state.hasher.hashCastle(board_state.castlePerm);
+board_state.stateKey=board_state.hasher.hashCastle(board_state.stateKey,board_state.castlePerm);
 board_state.enPas = NO_SQ;
 
 board_state.hisPly++;
@@ -104,7 +104,7 @@ if(board_state.piecePlacement[from].pieceOccupying.pieceType == wP || board_stat
     if((from - to) == 16 || (from - to) == -16){
         board_state.enPas = (from + to)/2;
     }
-    board_state.hasher.hashPiece(NO_PIECE, board_state.enPas);
+    board_state.stateKey=board_state.hasher.hashPiece(board_state.stateKey,NO_PIECE, board_state.enPas);
 
 }  
 
@@ -113,7 +113,7 @@ if(((move>>14) & 0x3)==1){
     board_state.updatePieceBoard(board_state.piecePlacement[to], Piece((PieceTypeWithoutColor) (((move>>12) & 0x3) + 2) , (color)board_state.side , to), 1);
     
     board_state.side^=1;
-    board_state.hasher.hashSide();
+    board_state.stateKey=board_state.hasher.hashSide(board_state.stateKey);
     board_state.undoStack.push(undoMove);
     return ;
 }
@@ -122,7 +122,7 @@ if(((move>>14) & 0x3)==1){
  
  // cout<<"SIDE MAKING MOVE IS "<<board_state.side<<endl;
  board_state.side^=1;
-board_state.hasher.hashSide();
+board_state.stateKey=board_state.hasher.hashSide(board_state.stateKey);
 
    
 
@@ -165,20 +165,20 @@ void MoveMaker::UndoMove(){
 
     }
     if(board_state.enPas!=NO_SQ){
-        board_state.hasher.hashPiece(NO_PIECE, board_state.enPas);
+        board_state.stateKey=board_state.hasher.hashPiece(board_state.stateKey,NO_PIECE, board_state.enPas);
     }
-    board_state.hasher.hashCastle(board_state.castlePerm);
+    board_state.stateKey=board_state.hasher.hashCastle(board_state.stateKey,board_state.castlePerm);
     board_state.castlePerm = (move >> 24) & 0xF;
-    board_state.hasher.hashCastle(board_state.castlePerm);
+    board_state.stateKey=board_state.hasher.hashCastle(board_state.stateKey,board_state.castlePerm);
     board_state.fiftyMove = (move >> 16) & 0xFF;
     board_state.enPas = ((move >> 28) & 0x3F) ;
     int capturedPiece = (move >> 34) & 0xF;
     board_state.hisPly--;
 
-    board_state.fullMoves=board_state.ply/2;
+    board_state.fullMoves=board_state.hisPly/2;
 
     if(board_state.enPas!=NO_SQ){
-        board_state.hasher.hashPiece(NO_PIECE, board_state.enPas);
+        board_state.stateKey=board_state.hasher.hashPiece(board_state.stateKey,NO_PIECE, board_state.enPas);
     }
 
     if(((move>>14) & 0x3)==1){
@@ -190,7 +190,7 @@ void MoveMaker::UndoMove(){
         board_state.updatePieceBoard(board_state.piecePlacement[to], Piece((PieceType) capturedPiece , to), 1);
         }
         board_state.side^=1;
-        board_state.hasher.hashSide();
+        board_state.stateKey=board_state.hasher.hashSide(board_state.stateKey);
         return ;
     }
 
@@ -219,7 +219,7 @@ void MoveMaker::UndoMove(){
 
 
 board_state.side^=1;
-board_state.hasher.hashSide();
+board_state.stateKey=board_state.hasher.hashSide(board_state.stateKey);
 
 
 

@@ -14,20 +14,20 @@ public:
     int ply;
     int pvMove;
     vector<unordered_set<int>> *betaCutters;
-    int alphaImprovers[13][64];
+    vector<vector<int>> * alphaImprovers;
     vector<Square> *piecePlacement;
     
 
   public:
     comparator(int depth, int pvMove, vector<Square> * piecePlacement,
-               vector<unordered_set<int>> *betaCutters, int alphaImprovers[13][64]);
+               vector<unordered_set<int>> *betaCutters, vector<vector<int>> * alphaImprovers);
     bool operator()(int move1, int move2) const;
   };
 
   MoveOrderer(Board_State *board_state);
   vector<unordered_set<int>> betaCutters;
 
-  int alphaImprovers[13][64];
+  vector<vector<int>>  alphaImprovers;
   Board_State *board_state;
 
    void registerAlphaImprover(int move, int depth, int score) {
@@ -55,20 +55,20 @@ public:
 
   void sortMoves(vector<int> &moveList, int pl , int pvMove);
   void reset();
-  void inline heapifyMoves(vector<int> &moveList, int pl , int pvMove) {
+//   void inline heapifyMoves(vector<int> &moveList, int pl , int pvMove) {
 
-    std::make_heap(moveList.begin(), moveList.end(),comparator (pl, pvMove, &(board_state->piecePlacement), &betaCutters, alphaImprovers));
-  }
+//     std::make_heap(moveList.begin(), moveList.end(),comparator (pl, pvMove, &(board_state->piecePlacement), &betaCutters, alphaImprovers));
+//   }
 
   
 
-int inline popMove(vector<int> &moveList, int pl , int pvMove) {
+// int inline popMove(vector<int> &moveList, int pl , int pvMove) {
 
-    std::pop_heap(moveList.begin(), moveList.end(),comparator (pl, pvMove, &(board_state->piecePlacement), &betaCutters, alphaImprovers));
-    int mv = moveList.back();
-    moveList.pop_back();
-    return mv;
-  }
+//     std::pop_heap(moveList.begin(), moveList.end(),comparator (pl, pvMove, &(board_state->piecePlacement), &betaCutters, alphaImprovers));
+//     int mv = moveList.back();
+//     moveList.pop_back();
+//     return mv;
+//   }
 
 
 };

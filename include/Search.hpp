@@ -17,7 +17,7 @@ public:
   U64 perft(int depth, bool root);
   void resetSearch();
   unordered_map<U64, int> pvTable;
-  int get_pv_line();
+  int get_pv_line(int);
   void searchPos();
   void checkUp();
 

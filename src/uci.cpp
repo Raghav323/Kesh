@@ -9,9 +9,9 @@
 void parseGo(const std::string& s, Search* chessSearch) {
     int depth = -1, movestogo = 30, movetime = -1;
     int time = -1, inc = 0;
-    cout<<"DEBUG"<<endl;
+    // cout<<"DEBUG"<<endl;
     chessSearch->resetSearch();    
-        cout<<"DEBUG2"<<endl;
+        // cout<<"DEBUG2"<<endl;
 
 
     size_t pos = 0;
@@ -51,7 +51,7 @@ void parseGo(const std::string& s, Search* chessSearch) {
         movestogo = 1;
     }
 
-    cout<<"hi"<<endl;
+    // cout<<"hi"<<endl;
     chessSearch->starttime = std::chrono::system_clock::now();
     chessSearch->depth = depth;
 
@@ -90,7 +90,7 @@ void parsePosition(string s , Search *chessSearch){
 
 
     if(s.substr(9,8)=="startpos"){
-        cout<<"HI"<<endl;
+        // cout<<"HI"<<endl;
         chessSearch->moveMaker.board_state =   Board_State(START_POS);
     }
     else{
@@ -176,7 +176,7 @@ void uci_loop(){
                 break;
             }
 
-            cin.ignore(numeric_limits<streamsize>::max(), '\n');
+            // cin.ignore(numeric_limits<streamsize>::max(), '\n');
 
         }
 

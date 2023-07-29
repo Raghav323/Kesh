@@ -6,17 +6,17 @@ public:
   U64 pieceKeys[64][13];
   U64 sideKey;
   U64 castleKeys[16];
-  U64 *sKey;
+  
 
   std::mt19937_64 gen;
   std::uniform_int_distribution<unsigned long long> dis;
 
-  Zobrist(U64 *posKey);
+  Zobrist();
 
-  void  hashSide() ;
+U64  hashSide(U64 stateKey) ;
 
-  void  hashCastle(int castlePerm);
+  U64  hashCastle(U64 stateKey,int castlePerm);
 
-  void  hashPiece(PieceType piece, int sq);
+  U64  hashPiece(U64 stateKey ,PieceType piece, int sq);
 
 };

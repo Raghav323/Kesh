@@ -3,6 +3,7 @@
 #include "../include/evaluate.hpp"
 #include <chrono>
 #include <climits>
+#include <limits>
 #include "../include/misc.hpp"
 
 #define MATE 29000
@@ -19,10 +20,11 @@ Search::Search(string FEN)
   // cout << "---------------------------------" << endl;
 }
 
-int Search::get_pv_line() {
+int Search::get_pv_line(int pvDepth) {
 
   cout << " pv ";
-  while (pvTable.find(moveMaker.board_state.stateKey) != pvTable.end()) {
+  int count =0;
+  while (pvTable.find(moveMaker.board_state.stateKey) != pvTable.end() && count<pvDepth) {
 
     int move = pvTable[moveMaker.board_state.stateKey];
     // if(move==0){
@@ -34,6 +36,8 @@ int Search::get_pv_line() {
     moveMaker.board_state.ply++;
 
     moveMaker.board_state.registerMove();
+
+    count++;
     // cout<< "STATE KEY : "<<moveMaker.board_state.stateKey<<endl;
     // cout<<"PLY : "<<moveMaker.board_state.ply<<endl;
 
@@ -132,22 +136,24 @@ void Search::checkUp() {
         stopped = true;
         std::string input;
         std::getline(std::cin, input);
-
         if (input.length() > 0) {
             if (input == "quit") {
                 quit = true;
             }
         }
+       // cin.ignore(numeric_limits<streamsize>::max(), '\n');
+
     }
 }
 
 void Search::searchPos() {
   // resetSearch();
+  moveOrderer = MoveOrderer(&moveMaker.board_state);
   if(pvTable.size()>PVTABLESIZE-1000){
     pvTable.clear();
-    pvTable.reserve(PVTABLESIZE);
+    // pvTable.reserve(PVTABLESIZE);
     }
-  moveOrderer.reset();
+  // moveOrderer.reset();
  
   int bestScore = -INT_MAX;
   int bestmove = 0;
@@ -163,7 +169,7 @@ void Search::searchPos() {
     
     cout << "info score cp " << bestScore << " depth "
          << d  << " nodes " << nodes << " time " << (chrono::duration_cast<chrono::milliseconds>((chrono::system_clock::now() - starttime) )).count();
-    bestmove = get_pv_line();
+    bestmove = get_pv_line(d);
     // if (fh != 0)
     //   cout << "Ordering : " << (fhf / fh) << endl;
     

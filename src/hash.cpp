@@ -4,11 +4,11 @@
 
 
 
-Zobrist::Zobrist(U64 * posKey){
+Zobrist::Zobrist(){
     // std::random_device rd;
     gen = mt19937_64();
 
-    sKey = posKey;
+    
     // srand(time(NULL));
     for(int i = 0 ; i < 64 ; i++){
         for(int j = 0 ; j < 13 ; j++){
@@ -23,27 +23,29 @@ Zobrist::Zobrist(U64 * posKey){
 
 };
 
-void  Zobrist::hashPiece(PieceType piece, int sq) {
+U64  Zobrist::hashPiece(U64 sKey , PieceType piece, int sq) {
     if (sq == NO_SQ)
-      return;
+      return sKey;
     if (piece == NO_PIECE)
-      return;
+      return sKey;
     // cout<<"PIECE KEYS :"<<pieceKeys[sq][piece]<<endl;
-    (*sKey) ^= pieceKeys[sq][piece];
+    (sKey) ^= pieceKeys[sq][piece];
+    return sKey ; 
 
    
   };
 
-  void  Zobrist::hashCastle(int castlePerm) { (*sKey) ^= castleKeys[castlePerm]; };// cout<<"TRANSFORMED POS KEY IS "<<*sKey<<endl; };
+  U64  Zobrist::hashCastle(U64 sKey ,  int castlePerm) { (sKey) ^= castleKeys[castlePerm];  return sKey;};// cout<<"TRANSFORMED POS KEY IS "<<*sKey<<endl; };
 
 
 
 
 
 
-  void  Zobrist::hashSide() {
+U64  Zobrist::hashSide(U64 sKey) {
     
-    (*sKey) ^= sideKey;
+    (sKey) ^= sideKey;
+    return sKey;
     // cout<<"TRANSFORMED POS KEY IS "<<*sKey<<endl;
     
   };

@@ -2,12 +2,14 @@
 #include "../include/Board.hpp"
 #include "../include/defs.hpp"
 #include <unordered_set>
+#include <vector>
+
 
 
 MoveOrderer::MoveOrderer(Board_State* board_state){
     betaCutters = * new vector<unordered_set<int>>(MAX_DEPTH,unordered_set<int>(MAX_BCUTS_STORED));
-
-    std::fill( &alphaImprovers[0][0], &alphaImprovers[13][0]  , 0ULL );
+    alphaImprovers = vector<vector<int>>(13, vector<int>(64, 0));
+    // std::fill( &alphaImprovers[0][0], &alphaImprovers[13][0]  , 0ULL );
     this->board_state=board_state;
 
 
@@ -53,31 +55,29 @@ MoveOrderer::MoveOrderer(Board_State* board_state){
 
 
     // cout<<"DEBUG: Alpha Improver Piece FROM SQUARE IS "<<(*piecePlacement)[(move1) & 0x3F].pieceOccupying.pieceType<<endl; 
-    return alphaImprovers[((*piecePlacement)[(move1) & 0x3F]).pieceOccupying.pieceType] [(move1>>6) & 0x3F ] > alphaImprovers[(*piecePlacement)[(move2) & 0x3F].pieceOccupying.pieceType][(move2>>6) & 0x3F];
+    return (*alphaImprovers)[((*piecePlacement)[(move1) & 0x3F]).pieceOccupying.pieceType] [(move1>>6) & 0x3F ] > (*alphaImprovers)[(*piecePlacement)[(move2) & 0x3F].pieceOccupying.pieceType][(move2>>6) & 0x3F];
 
 
   }
 
  MoveOrderer::comparator::comparator(int pl, int pvMove, vector<Square> * piecePlacement,
-               vector<unordered_set<int>> *betaCutters, int alphaImprovers[13][64]){
+               vector<unordered_set<int>> *betaCutters, vector<vector<int>> * alphaImprovers){
 
     this->ply=pl;
     this->pvMove=pvMove;
     this->betaCutters=betaCutters;
     this->piecePlacement=piecePlacement;
-    memcpy(alphaImprovers, alphaImprovers, sizeof(alphaImprovers));
-
+    this->alphaImprovers=alphaImprovers;
                }
-
 void MoveOrderer::sortMoves(vector<int> &moveList, int pl , int pvMove) {
 
     
-    std::sort(moveList.begin(), moveList.end(),comparator (pl, pvMove, &(board_state->piecePlacement), &betaCutters, alphaImprovers));
+    std::sort(moveList.begin(), moveList.end(),comparator (pl, pvMove, &(board_state->piecePlacement), &betaCutters, &alphaImprovers));
   
   }
 
 void MoveOrderer::reset(){
     betaCutters = * new vector<unordered_set<int>>(MAX_DEPTH,unordered_set<int>(MAX_BCUTS_STORED));
-
-    std::fill( &alphaImprovers[0][0], &alphaImprovers[13][0]  , 0ULL );
+    alphaImprovers = vector<vector<int>>(13, vector<int>(64, 0));
+    // std::fill( &alphaImprovers[0][0], &alphaImprovers[13][0]  , 0ULL );
 }

@@ -82,7 +82,7 @@ void Board_State::updatePieceBoard(Square sq , Piece piece , bool add){
             
         
         };
-        hasher.hashPiece(piece.pieceType, sq.squareNo);
+        stateKey=hasher.hashPiece(stateKey,piece.pieceType, sq.squareNo);
         pieceBoard[piece.pieceType].insert(sq);
         piecePlacement[sq.squareNo].pieceOccupying = piece;
         piece.pieceSquare = sq.squareNo;
@@ -136,7 +136,7 @@ void Board_State::updatePieceBoard(Square sq , Piece piece , bool add){
         
         };
 
-        hasher.hashPiece(piece.pieceType, sq.squareNo);
+        stateKey=hasher.hashPiece(stateKey,piece.pieceType, sq.squareNo);
         pieceBoard[piece.pieceType].erase(sq);
         piecePlacement[sq.squareNo].pieceOccupying = Piece(NO_PIECE,sq.squareNo);
         clear_bit(OccupancyMap, sq.squareNo);
@@ -157,7 +157,7 @@ updatePieceBoard(piecePlacement[from],piecePlacement[from].pieceOccupying , 0);
 
 }
 
-Board_State::Board_State(std::string FEN) : hasher(&stateKey){
+Board_State::Board_State(std::string FEN) : hasher(){
   
 
     //hasher=Zobrist(&stateKey);
@@ -263,7 +263,7 @@ Board_State::Board_State(std::string FEN) : hasher(&stateKey){
 
     if (FEN[i]=='w'){
         side=WHITE ;
-        hasher.hashSide();
+        stateKey = hasher.hashSide(stateKey);
      
     }
     else{
@@ -303,7 +303,7 @@ Board_State::Board_State(std::string FEN) : hasher(&stateKey){
         i+=1;
         
     }
-    hasher.hashCastle(castlePerm);
+    stateKey=hasher.hashCastle(stateKey,castlePerm);
 
     
     i+=1;
@@ -316,7 +316,7 @@ Board_State::Board_State(std::string FEN) : hasher(&stateKey){
         r = FEN[i+1] - '1';
         enPas = FR2SQ(f,r);
         i+=3;
-        hasher.hashPiece(NO_PIECE, enPas);
+        stateKey=hasher.hashPiece(stateKey,NO_PIECE, enPas);
     }
     else{
         enPas = NO_SQ;
