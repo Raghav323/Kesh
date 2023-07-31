@@ -54,7 +54,7 @@ To use Kesh, you'll need a UCI-compatible chess GUI. Here are the basic steps to
 1. Clone the github repository using the following command : 
    
 ```shell
-git clone https://github.com/Raghav323 Kesh.git
+git clone https://github.com/Raghav323/Kesh.git
 ```
 
 
