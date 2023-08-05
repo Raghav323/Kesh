@@ -45,11 +45,10 @@ int Search::get_pv_line(int pvDepth) {
   cout << endl;
 
   while (moveMaker.board_state.ply > 0) {
-
+    moveMaker.board_state.registerUndoMove();
     moveMaker.UndoMove();
     moveMaker.board_state.ply--;
 
-    moveMaker.board_state.registerUndoMove();
   }
 
   return pvTable[moveMaker.board_state.stateKey];
@@ -89,10 +88,10 @@ U64 Search::perft(int depth, bool root) {
     nodes += cnt;
 
     // moveMaker.board_state=B;
+    moveMaker.board_state.registerUndoMove();
     moveMaker.UndoMove();
     moveMaker.board_state.ply--;
 
-    moveMaker.board_state.registerUndoMove();
 
     // cout<<"AFTER UNDO SIDE : "<<moveMaker.board_state.side<<endl;
 
@@ -148,6 +147,8 @@ void Search::checkUp() {
 
 void Search::searchPos() {
   // resetSearch();
+  // moveMaker.board_state.ply = 0;
+
   moveOrderer = MoveOrderer(&moveMaker.board_state);
   if(pvTable.size()>PVTABLESIZE-1000){
     pvTable.clear();
@@ -170,6 +171,7 @@ void Search::searchPos() {
     cout << "info score cp " << bestScore << " depth "
          << d  << " nodes " << nodes << " time " << (chrono::duration_cast<chrono::milliseconds>((chrono::system_clock::now() - starttime) )).count();
     bestmove = get_pv_line(d);
+
     // if (fh != 0)
     //   cout << "Ordering : " << (fhf / fh) << endl;
     
@@ -185,7 +187,7 @@ int Search::Quiescense(int alpha, int beta) {
     checkUp();
   }
 
-  nodes++;
+  nodes++; 
 
   
   if (moveMaker.board_state.ply > MAX_DEPTH - 1) {
@@ -226,10 +228,11 @@ int Search::Quiescense(int alpha, int beta) {
     // cout<<"Score : "<<score<<endl<<endl;
 
     // moveMaker.board_state=B;
+    moveMaker.board_state.registerUndoMove();
+
     moveMaker.UndoMove();
         moveMaker.board_state.ply--;
 
-    moveMaker.board_state.registerUndoMove();
 
     if(stopped){
       return 0;
@@ -267,7 +270,16 @@ int Search::Quiescense(int alpha, int beta) {
 
 
 int Search::AlphaBeta(int alpha, int beta, int depth) {
+  nodes++;
+  
+  if (moveMaker.board_state.ply > MAX_DEPTH - 1) {
+    return evalPos(moveMaker.board_state);
+  }
 
+  if (moveMaker.board_state.fiftyMove >= 100) {
+    // cout<<"DEBUG 0"<<endl;
+    return 0;
+  }
   if (depth == 0) {
 
     
@@ -280,15 +292,7 @@ int Search::AlphaBeta(int alpha, int beta, int depth) {
     
   }
 
-  nodes++;
-  if (moveMaker.board_state.ply > MAX_DEPTH - 1) {
-    return evalPos(moveMaker.board_state);
-  }
-
-  if (moveMaker.board_state.fiftyMove >= 100) {
-    // cout<<"DEBUG 0"<<endl;
-    return 0;
-  }
+  
   
   vector<int> moveList;
   int score = -INT_MAX;
@@ -314,6 +318,9 @@ int Search::AlphaBeta(int alpha, int beta, int depth) {
     moveMaker.MakeMove(currentMove);
     moveMaker.board_state.ply++;
     if( moveMaker.board_state.isRepetition()){
+      // cout<<("IS A REPETITION !!!")<<endl;
+        //cout<<"Current Move : ";print_move(currentMove);cout<<" Depth : "<<depth<<endl;
+
       score =0;
       moveMaker.board_state.registerMove();
     }
@@ -325,10 +332,9 @@ int Search::AlphaBeta(int alpha, int beta, int depth) {
    
 
     
-
+    moveMaker.board_state.registerUndoMove();
     moveMaker.UndoMove();
     moveMaker.board_state.ply--;
-    moveMaker.board_state.registerUndoMove();
 
     if(stopped){
       return 0;
@@ -345,10 +351,10 @@ int Search::AlphaBeta(int alpha, int beta, int depth) {
         moveOrderer.registerBetaCutter(currentMove, moveMaker.board_state.ply);
         return beta;
       }
-
       bestMove = currentMove;
               // cout<<"DEBUGGGG"<<endl;
-              // cout<<"BMOVE :"<<bestMove<<endl;
+      //cout<<"BEST SCORE : "<<score<<" Depth : "<<depth<<" BEST MOVE :";print_move(bestMove);cout<<endl;
+        
 
       moveOrderer.registerAlphaImprover(bestMove, depth, score - alpha);
               // cout<<"DEBUGGGG2"<<endl;
@@ -361,6 +367,8 @@ int Search::AlphaBeta(int alpha, int beta, int depth) {
   if (moveList.size() == 0) {
     if (movegen.num_checkers[moveMaker.board_state.side]) {
       // cout << "DEBUG 2" << endl;
+      cout<<"MATE IN "<<moveMaker.board_state.ply<<" MOVES"<<endl;
+      moveMaker.board_state.printBoard();
       return -MATE + moveMaker.board_state.ply;
     } else {
       // cout << "DEBUG 3" << endl;

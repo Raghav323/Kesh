@@ -70,14 +70,15 @@ void parseGo(const std::string& s, Search* chessSearch) {
 
     
 
-    std::cout  <<"time: " << time
+    /*std::cout  <<"time: " << time
               <<" start: " << chessSearch->starttime.time_since_epoch().count()
               << " stop: " << chessSearch->stoptime.time_since_epoch().count()
-              << " depth: " << chessSearch->depth << " timeset: " << chessSearch->timeset << std::endl;
+              << " depth: " << chessSearch->depth << " timeset: " << chessSearch->timeset << std::endl;*/
 
     //  Search chessSeach(START_POS);
     // chessSearch.depth=2;
     chessSearch->searchPos();
+    
 }
 
 
@@ -114,7 +115,7 @@ void parsePosition(string s , Search *chessSearch){
         chessSearch->moveMaker.parse_moves_string(moves, s);
         for (auto move : moves) {
             chessSearch->moveMaker.MakeMove(move);
-            chessSearch->moveMaker.board_state.ply++;
+            // chessSearch->moveMaker.board_state.ply++;
             chessSearch->moveMaker.board_state.registerMove();
         }
     }
@@ -170,6 +171,11 @@ void uci_loop(){
                 cout<<"id author Raghav"<<endl;
                 cout<<"uciok"<<endl;
             }
+
+            else if(input.substr(0,5)=="perft"){
+                cout<<endl<<chessSearch->perft(input[6]-'0',true)<<endl;
+            }
+            
 
             if(chessSearch!=nullptr && chessSearch->quit){
                 chessSearch->quit=true;

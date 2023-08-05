@@ -22,7 +22,7 @@ class Board_State{
 
     int fullMoves;
     int KingSq[2];
-
+    int numPieces[13];
 
     int eval[2];
     
@@ -45,7 +45,7 @@ class Board_State{
 
     // U64 piecesMap[13]={0ULL};
 
-    unordered_set<U64> history;
+    unordered_map<U64,int> history;
     stack<U64> undoStack;
     
     std::unordered_map<PieceType,unordered_set<Square , Square::HashFunction >> pieceBoard ;
@@ -61,9 +61,14 @@ class Board_State{
     void resetBoard();
 
     bool isRepetition();
-    void increment_evalPos(Square sq , Piece piece , bool add);
+    void increment_evalPos(Square sq , Piece piece , bool add,bool endgame);
 
-    void  inline registerUndoMove(){history.erase(stateKey);};
-    void inline registerMove(){history.insert(stateKey);};
+    void  inline registerUndoMove(){history[stateKey]-=1; if(history[stateKey]==0){history.erase(stateKey);}};
+    void inline registerMove(){
+        if (history.find(stateKey) == history.end()){
+            history[stateKey]=0;
+        } 
+        history[stateKey]+=1;
+    };
 };
 

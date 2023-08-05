@@ -24,6 +24,11 @@ int from = move & 0x3F;
 int to = (move >> 6) & 0x3F;
 
 int side = board_state.side;
+
+if(board_state.piecePlacement[to].pieceOccupying!=NO_PIECE){  // ORDER IS IMPORTANT 
+        board_state.numPieces[NO_PIECE]-=1;
+
+}
 U64 undoMove = move | (board_state.fiftyMove << 16) | (board_state.castlePerm << 24) | ((U64)(board_state.enPas) << 28) | ((U64)board_state.piecePlacement[to].pieceOccupying.pieceType << 34) ;
 
 if(((move>>14) & 0x3)==2){
@@ -141,7 +146,7 @@ void MoveMaker::UndoMove(){
 
     int side = board_state.side;
 
-    board_state.history.erase(board_state.stateKey);
+    // BUG->board_state.history.erase(board_state.stateKey);
 
 
     if(((move>>14) & 0x3)==3){
@@ -187,7 +192,10 @@ void MoveMaker::UndoMove(){
         board_state.updatePieceBoard(board_state.piecePlacement[to], board_state.piecePlacement[to].pieceOccupying , 0);
         board_state.updatePieceBoard(board_state.piecePlacement[from], Piece(PAWN , pawnC , from), 1);
         if (capturedPiece!=NO_PIECE){
+
         board_state.updatePieceBoard(board_state.piecePlacement[to], Piece((PieceType) capturedPiece , to), 1);
+        board_state.numPieces[NO_PIECE]+=1; // ORDER IS IMPORTANT 
+
         }
         board_state.side^=1;
         board_state.stateKey=board_state.hasher.hashSide(board_state.stateKey);
@@ -217,7 +225,10 @@ void MoveMaker::UndoMove(){
     }
 
 
+if(capturedPiece!=NO_PIECE){   // ORDER IS IMPORTANT 
+    board_state.numPieces[NO_PIECE]+=1;
 
+}
 board_state.side^=1;
 board_state.stateKey=board_state.hasher.hashSide(board_state.stateKey);
 

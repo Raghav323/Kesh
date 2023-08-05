@@ -44,7 +44,8 @@
 
 #define TEST_FEN_17 "5n2/5k2/3P1ppp/p2PpN2/2b3P1/6PP/P2B1K2/8 w - - 0 1"
 
-#define TEST_FEN_18 "r1b1k2r/ppppnppp/2n2q2/2b5/3NP3/2P1B3/PP3PPP/RN1QKB1R w KQkq - 0 1"
+#define TEST_FEN_18                                                            \
+  "r1b1k2r/ppppnppp/2n2q2/2b5/3NP3/2P1B3/PP3PPP/RN1QKB1R w KQkq - 0 1"
 
 // AttackBoards --> KingDanger --> KingInfo --> CaptureBoard --> MoveList
 int main(int argc, char *argv[]) {
@@ -132,20 +133,28 @@ int main(int argc, char *argv[]) {
   // return 0;
 
   // FOR PERFT TESTING ////////////////////
-  //     string moves="";
-  //     string FEN = argv[1];
-  //     // cout<<argv[2]<<endl;
-  //      int depth = stoi(argv[2]);
-  //      if(argc>3){
-  //    moves=argv[3];
-  //      }
+  // string moves = "";
+  // string FEN = argv[1];
+  // // cout<<argv[2]<<endl;
+  // int depth = stoi(argv[2]);
+  // if (argc > 3) {
+  //   moves = argv[3];
+  // }
 
-  //     Search chessSearch(FEN);
-      
-      
+  // Search chessSearch(FEN);
 
-  // U64 total = chessSearch.perft(depth,true);
-  // cout<<endl<<total<<endl;
+  // vector<int> movesVEC;
+  // chessSearch.moveMaker.parse_moves_string(
+  //     movesVEC, "d6d5 e3f4 f3d4 f4e3 d4c6 e3f4 c6d4 f4g5 d5e5 g5h6 d4e6 h6h5 e5f5 h5h6 e4f3 h6h7 f5f6 h7h8 f3c6 h8h7 c6a8 h7h8 a8d5 h8h7 f6f7 h7h8 f7g6 h8g8 d5c6 g8h8");
+
+  // for (int move : movesVEC) {
+  //   chessSearch.moveMaker.MakeMove(move);
+  //   chessSearch.moveMaker.board_state.ply++;
+  //   chessSearch.moveMaker.board_state.registerMove();
+  // }
+  // chessSearch.moveMaker.board_state.printBoard();
+  // U64 total = chessSearch.perft(depth, true);
+  // cout << endl << total << endl;
   // return 0;
 
   //////////////////////////////////////
@@ -203,13 +212,8 @@ int main(int argc, char *argv[]) {
   // M.parse_moves_string("e4d3 e7f8Q d3d2");
   // M.board_state.printBoard();
 
-
-  
-
   // string input;
   // Search chessSearch(TEST_FEN_18);
- 
-
 
   // while (TRUE) {
   //   chessSearch.moveMaker.board_state.printBoard();
@@ -224,8 +228,7 @@ int main(int argc, char *argv[]) {
 
   //       chessSearch.moveMaker.UndoMove();
   //       chessSearch.moveMaker.board_state.registerUndoMove();
-      
-      
+
   //   }
   //   else if(input=="pv"){
   //     chessSearch.get_pv_line();
@@ -233,28 +236,28 @@ int main(int argc, char *argv[]) {
 
   //   else if (input.at(0) == 'p') {
   //     chessSearch.perft(1 + input.at(1) - '1', true);
-  //   } 
-    
+  //   }
+
   //   else if(input.at(0)=='s'){
   //     chessSearch.depth = 1+input.at(1) - '1';
   //     chessSearch.starttime = chrono::system_clock::now();
-  //     chessSearch.stoptime = chessSearch.starttime + chrono::milliseconds(200);
-  //     chessSearch.searchPos();
+  //     chessSearch.stoptime = chessSearch.starttime +
+  //     chrono::milliseconds(200); chessSearch.searchPos();
   //   }
 
   //   else if(input=="c"){
-  //     vector<int> moves ; 
-  //     chessSearch.movegen.generate_capture_moves(moves, chessSearch.moveMaker.board_state, chessSearch.moveMaker.board_state.side);
-  //     for(auto move : moves){
+  //     vector<int> moves ;
+  //     chessSearch.movegen.generate_capture_moves(moves,
+  //     chessSearch.moveMaker.board_state,
+  //     chessSearch.moveMaker.board_state.side); for(auto move : moves){
 
-        
   //       print_move(move);cout<<endl;
   //     }
   //     cout<<endl;
   //   }
-    
+
   //   else {
-  //      vector<int> moves ; 
+  //      vector<int> moves ;
   //     chessSearch.moveMaker.parse_moves_string(moves , input);
   //     for(auto move : moves){
 
@@ -262,15 +265,10 @@ int main(int argc, char *argv[]) {
   //       chessSearch.moveMaker.board_state.registerMove();
   //       cout<<endl;
   //     }
-      
-
-
-      
 
   //   }
 
   //   cin.ignore(INT_MAX, '\n');
   // }
-    uci_loop();
-
+uci_loop();
 }
