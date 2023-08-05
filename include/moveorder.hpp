@@ -4,8 +4,6 @@
 #include "Square.hpp"
 #include "defs.hpp"
 
-#include <unordered_set>
-#include <vector>
 
 class MoveOrderer {
 public:

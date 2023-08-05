@@ -1,6 +1,6 @@
 #include "../include/MoveMaker.hpp"
 #include "../include/defs.hpp"
-#include <stack>
+
 
 
 MoveMaker::MoveMaker(string FEN) :board_state(FEN){

@@ -1,9 +1,6 @@
 #include "../include/Search.hpp"
 #include "../include/defs.hpp"
 #include "../include/evaluate.hpp"
-#include <chrono>
-#include <climits>
-#include <limits>
 #include "../include/misc.hpp"
 
 #define MATE 29000

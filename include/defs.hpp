@@ -1,11 +1,19 @@
 #ifndef DEFS_H
 #define DEFS_H
 
-#include <bits/stdc++.h>
+// #include <bits/stdc++.h>
 #include<iostream> 
-# include <assert.h>
+#include <assert.h>
 #include <unordered_map>
-
+#include <vector>
+#include <string>
+#include <chrono>
+#include <climits>
+#include <stack>
+#include <unordered_set>
+#include <random>
+#include <string.h>
+#include <algorithm>
 using namespace std;
 
 

@@ -3,7 +3,7 @@
 #include "defs.hpp"
 #include "Square.hpp"
 #include "Board.hpp"
-#include <vector>
+
 
 class MoveGen{
     public:

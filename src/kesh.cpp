@@ -6,9 +6,8 @@
 #include "../include/defs.hpp"
 #include "../include/movegen.hpp"
 
-#include <climits>
-#include <iostream>
-#include <vector>
+
+
 
 #define TEST_FEN "rnbqkbnr/pppppppp/8/8/4P3/8/PPPP1PPP/RNBQKBNR b KQkq e3 0 1"
 #define TEST_FEN_2 "4k2r/6r1/8/8/8/8/3R4/R3K3 w Qk - 0 1"

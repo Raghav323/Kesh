@@ -1,8 +1,5 @@
 #include "../include/movegen.hpp"
 #include "../include/defs.hpp"
-#include <array>
-#include <new>
-#include <vector>
 #include "../include/Piece.hpp"
 
 
